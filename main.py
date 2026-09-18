@@ -9,9 +9,9 @@ import httpx
 
 app = FastAPI(title="Check It AI Backend")
 
-# మీ AQ API Key
+# తాజా Gemini API Key
 GEMINI_API_KEY = (
-    "AQ.Ab8RN6KWCs03spiSOLj1vWTHpX55dWG6Cq8o4YTTHg5vyQ73Qg"
+    "AQ.Ab8RN6LE27ubnYqLNYoXwOT1DYGMxvjcYiu7OGEZwFHbh5BEUA"
 )
 
 # AWS S3 సెటప్ (ఐచ్ఛికం)
@@ -59,18 +59,32 @@ async def check_question(
         if file and file.filename:
             file_bytes = await file.read()
             if len(file_bytes) > 0:
+                if s3_client:
+                    try:
+                        unique_filename = (
+                            f"questions/{uuid.uuid4()}-{file.filename}"
+                        )
+                        s3_client.put_object(
+                            Bucket=S3_BUCKET,
+                            Key=unique_filename,
+                            Body=file_bytes,
+                            ContentType=file.content_type,
+                        )
+                    except Exception as s3_err:
+                        print(f"S3 Upload Error: {s3_err}")
+
                 mime_type = file.content_type or "image/jpeg"
                 encoded_image = base64.b64encode(file_bytes).decode("utf-8")
                 parts.append(
                     {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
                 )
 
-        # గూగుల్ సూచించిన డైరెక్ట్ v1beta ఎండ్‌పాయింట్
-        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+        # cURL లో ఇచ్చిన ఖచ్చితమైన ఎండ్‌పాయింట్
+        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 
         headers = {
             "Content-Type": "application/json",
-            "x-goog-api-key": GEMINI_API_KEY,
+            "X-goog-api-key": GEMINI_API_KEY,
         }
 
         payload = {
