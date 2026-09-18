@@ -80,9 +80,10 @@ async def check_question(
 
         url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
+        # AQ. టోకెన్ల కోసం ఖచ్చితంగా Bearer ఆథెంటికేషన్ మాత్రమే వాడాలి
         headers = {
             "Content-Type": "application/json",
-            "X-goog-api-key": GEMINI_API_KEY,
+            "Authorization": f"Bearer {GEMINI_API_KEY}",
         }
 
         payload = {
