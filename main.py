@@ -9,7 +9,7 @@ import httpx
 
 app = FastAPI(title="Check It AI Backend")
 
-# మీ తాజా Gemini API Key
+# Render Environment Variables నుండి లేదా డీఫాల్ట్ కీ
 GEMINI_API_KEY = os.getenv(
     "GEMINI_API_KEY",
     "AQ.Ab8RN6KRDiRukL3Xy21q1LnU_LP9FlC65Si8u_KpA7fWAeJ63w",
@@ -80,7 +80,6 @@ async def check_question(
                     {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
                 )
 
-        # AI Studio అధికారిక మోడల్ ఎండ్‌పాయింట్
         url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 
         headers = {
