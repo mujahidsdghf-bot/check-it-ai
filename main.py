@@ -5,28 +5,15 @@ import uuid
 from typing import Optional
 import boto3
 from fastapi import FastAPI, File, Form, UploadFile
-import google.generativeai as genai
+import httpx
 
 app = FastAPI(title="Check It AI Backend")
 
-# Render నుండి API కీ తీసుకోవడం
+# Render Environment Variables నుండి టోకెన్ తీసుకోవడం
 GEMINI_API_KEY = os.getenv(
     "GEMINI_API_KEY",
     "AQ.Ab8RN6KRDiRukL3Xy21q1LnU_LP9FlC65Si8u_KpA7fWAeJ63w",
 ).strip()
-
-# జెమిని కాన్ఫిగరేషన్
-genai.configure(api_key=GEMINI_API_KEY)
-
-SYSTEM_INSTRUCTION = (
-    "నువ్వు 'Check It AI' ఎడ్యుకేషన్ అండ్ కెరీర్ మెంటార్. విద్యార్థుల ప్రశ్నలకు "
-    "తెలుగులో స్పష్టమైన, సరైన సమాధానాలు అందించు."
-)
-
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    system_instruction=SYSTEM_INSTRUCTION,
-)
 
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -43,6 +30,11 @@ if AWS_ACCESS_KEY and AWS_SECRET_KEY:
         )
     except Exception as e:
         print(f"S3 Warning: {e}")
+
+SYSTEM_INSTRUCTION = (
+    "నువ్వు 'Check It AI' ఎడ్యుకేషన్ అండ్ కెరీర్ మెంటార్. విద్యార్థుల ప్రశ్నలకు "
+    "తెలుగులో స్పష్టమైన, సరైన సమాధానాలు అందించు."
+)
 
 
 @app.get("/")
@@ -62,7 +54,7 @@ async def check_question(
             f"Question: {question if question else 'దయచేసి వివరణ ఇవ్వండి.'}"
         )
 
-        content_parts = [prompt_text]
+        parts = [{"text": prompt_text}]
 
         if file and file.filename:
             file_bytes = await file.read()
@@ -82,17 +74,47 @@ async def check_question(
                         print(f"S3 Upload Error: {s3_err}")
 
                 mime_type = file.content_type or "image/jpeg"
-                content_parts.append(
-                    {"mime_type": mime_type, "data": file_bytes}
+                encoded_image = base64.b64encode(file_bytes).decode("utf-8")
+                parts.append(
+                    {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
                 )
 
-        # అధికారిక SDK కాల్
-        response = model.generate_content(content_parts)
+        # OAuth టోకెన్ కోసం సరైన ఎండ్‌పాయింట్
+        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+
+        # AQ. టోకెన్ల కోసం కేవలం Bearer ఆథెంటికేషన్ మాత్రమే వాడాలి
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {GEMINI_API_KEY}",
+        }
+
+        payload = {
+            "contents": [{"parts": parts}],
+            "system_instruction": {"parts": [{"text": SYSTEM_INSTRUCTION}]},
+        }
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            resp = await client.post(url, headers=headers, json=payload)
+            data = resp.json()
+
+        if resp.status_code != 200:
+            return {
+                "status": "error",
+                "http_status": resp.status_code,
+                "error_details": data,
+            }
+
+        answer_text = (
+            data.get("candidates", [{}])[0]
+            .get("content", {})
+            .get("parts", [{}])[0]
+            .get("text", "సమాధానం రాలేదు.")
+        )
 
         return {
             "status": "success",
             "exam_type": exam_type,
-            "answer": response.text if response.text else "సమాధానం రాలేదు.",
+            "answer": answer_text,
         }
 
     except Exception as err:
