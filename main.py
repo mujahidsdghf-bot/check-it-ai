@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import os
 import traceback
@@ -9,10 +10,9 @@ import httpx
 
 app = FastAPI(title="Check It AI Backend")
 
-# Render Environment Variables నుండి లేదా డీఫాల్ట్‌గా మీ తాజా కీ
+# Render Environment Variables నుండి లేదా డీఫాల్ట్ కీ
 GEMINI_API_KEY = os.getenv(
-    "GEMINI_API_KEY",
-    "AQ.Ab8RN6KRDiRukL3Xy21q1LnU_LP9FlC65Si8u_KpA7fWAeJ63w",
+    "GEMINI_API_KEY", "AQ.Ab8RN6KRDiRukL3Xy21q1LnU_LP9FlC65Si8u_KpA7fWAeJ63w"
 ).strip()
 
 # AWS S3 సెటప్ (ఐచ్ఛికం)
@@ -80,7 +80,6 @@ async def check_question(
                     {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
                 )
 
-        # AI Studio cURL లో సూచించిన అధికారిక మోడల్ ఎండ్‌పాయింట్
         url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 
         headers = {
@@ -93,8 +92,17 @@ async def check_question(
             "system_instruction": {"parts": [{"text": SYSTEM_INSTRUCTION}]},
         }
 
+        # హై డిమాండ్ (503) వచ్చినప్పుడు ఆటోమేటిక్‌గా రీట్రై చేసే లాజిక్
         async with httpx.AsyncClient(timeout=60.0) as client:
-            resp = await client.post(url, headers=headers, json=payload)
+            for attempt in range(3):
+                resp = await client.post(url, headers=headers, json=payload)
+                if resp.status_code == 200:
+                    break
+                if resp.status_code in [503, 429]:
+                    await asyncio.sleep(2)
+                    continue
+                break
+
             data = resp.json()
 
         if resp.status_code != 200:
