@@ -9,7 +9,6 @@ import httpx
 
 app = FastAPI(title="Check It AI Backend")
 
-# Render Environment Variables నుండి టోకెన్ తీసుకోవడం
 GEMINI_API_KEY = os.getenv(
     "GEMINI_API_KEY",
     "AQ.Ab8RN6KRDiRukL3Xy21q1LnU_LP9FlC65Si8u_KpA7fWAeJ63w",
@@ -46,7 +45,7 @@ def root():
 async def check_question(
     question: Optional[str] = Form(None),
     exam_type: str = Form("General"),
-    file: Optional[UploadFile] = File(None),
+    file: Optional[UploadFile] = Form(None),
 ):
     try:
         prompt_text = (
@@ -56,7 +55,7 @@ async def check_question(
 
         parts = [{"text": prompt_text}]
 
-        if file and file.filename:
+        if file and hasattr(file, "filename") and file.filename:
             file_bytes = await file.read()
             if len(file_bytes) > 0:
                 if s3_client:
@@ -79,13 +78,11 @@ async def check_question(
                     {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
                 )
 
-        # OAuth టోకెన్ కోసం సరైన ఎండ్‌పాయింట్
         url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
-        # AQ. టోకెన్ల కోసం కేవలం Bearer ఆథెంటికేషన్ మాత్రమే వాడాలి
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {GEMINI_API_KEY}",
+            "X-goog-api-key": GEMINI_API_KEY,
         }
 
         payload = {
