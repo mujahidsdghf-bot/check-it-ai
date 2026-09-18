@@ -11,8 +11,10 @@ from PIL import Image
 
 app = FastAPI(title="Check It AI Backend")
 
-# మీ API Key
-GEMINI_API_KEY = "AQ.Ab8RN6JMqkLx19e13LIoS-0BwU7sPDjVABxBrm8cVb7fGgHm5A"
+# మీ కొత్త Gemini API Key
+GEMINI_API_KEY = (
+    "AQ.Ab8RN6KOO33Z_-G5b-wUfLHQ94qaBA7SLusw9TjkKiThC7mEbw"
+)
 
 try:
     ai_client = genai.Client(api_key=GEMINI_API_KEY)
@@ -72,7 +74,6 @@ async def check_question(
         contents.append(user_prompt)
         s3_path = None
 
-        # ఫోటో ఉంటే ప్రాసెస్ చేయడం
         if file and file.filename:
             file_bytes = await file.read()
             if len(file_bytes) > 0:
@@ -115,7 +116,6 @@ async def check_question(
         }
 
     except Exception as err:
-        # ఏదైనా ఎర్రర్ వస్తే 500 క్రాష్ అవ్వకుండా వివరంగా చూపిస్తుంది
         return {
             "status": "error",
             "error_type": str(type(err).__name__),
