@@ -5,14 +5,21 @@ import uuid
 from typing import Optional
 import boto3
 from fastapi import FastAPI, File, Form, UploadFile
-import httpx
+from google.cloud import aiplatform
+import vertexai
+from vertexai.generative_models import GenerativeModel, Part
 
-app = FastAPI(title="Check It AI Backend")
+app = FastAPI(title="Check It AI Backend - Vertex AI")
 
-GEMINI_API_KEY = os.getenv(
-    "GEMINI_API_KEY",
-    "AQ.Ab8RN6KRDiRukL3Xy21q1LnU_LP9FlC65Si8u_KpA7fWAeJ63w",
-).strip()
+# Render లో ఉన్న ప్రాజెక్ట్ వివరాలు మరియు టోకెన్ సెటప్
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "your-google-cloud-project-id")
+REGION = os.getenv("GOOGLE_CLOUD_REGION", "us-central1")
+
+# Vertex AI ఇనిషియలైజేషన్ (AQ టోకెన్ తో పనిచేస్తుంది)
+try:
+    vertexai.init(project=PROJECT_ID, location=REGION)
+except Exception as e:
+    print(f"Vertex Init Warning: {e}")
 
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -35,10 +42,16 @@ SYSTEM_INSTRUCTION = (
     "తెలుగులో స్పష్టమైన, సరైన సమాధానాలు అందించు."
 )
 
+# Vertex AI లోని జెమిని మోడల్
+model = GenerativeModel(
+    model_name="gemini-1.5-flash",
+    system_instruction=[SYSTEM_INSTRUCTION],
+)
+
 
 @app.get("/")
 def root():
-    return {"status": "online", "message": "Check It AI API is live!"}
+    return {"status": "online", "message": "Check It AI Vertex API is live!"}
 
 
 @app.post("/check")
@@ -53,7 +66,7 @@ async def check_question(
             f"Question: {question if question else 'దయచేసి వివరణ ఇవ్వండి.'}"
         )
 
-        parts = [{"text": prompt_text}]
+        content_parts = [prompt_text]
 
         if file and hasattr(file, "filename") and file.filename:
             file_bytes = await file.read()
@@ -73,46 +86,16 @@ async def check_question(
                         print(f"S3 Upload Error: {s3_err}")
 
                 mime_type = file.content_type or "image/jpeg"
-                encoded_image = base64.b64encode(file_bytes).decode("utf-8")
-                parts.append(
-                    {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
-                )
+                image_part = Part.from_data(data=file_bytes, mime_type=mime_type)
+                content_parts.append(image_part)
 
-        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-
-        # AQ. టోకెన్ల కోసం ఖచ్చితంగా Bearer ఆథెంటికేషన్ మాత్రమే వాడాలి
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {GEMINI_API_KEY}",
-        }
-
-        payload = {
-            "contents": [{"parts": parts}],
-            "system_instruction": {"parts": [{"text": SYSTEM_INSTRUCTION}]},
-        }
-
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            resp = await client.post(url, headers=headers, json=payload)
-            data = resp.json()
-
-        if resp.status_code != 200:
-            return {
-                "status": "error",
-                "http_status": resp.status_code,
-                "error_details": data,
-            }
-
-        answer_text = (
-            data.get("candidates", [{}])[0]
-            .get("content", {})
-            .get("parts", [{}])[0]
-            .get("text", "సమాధానం రాలేదు.")
-        )
+        # Vertex AI ద్వారా కంటెంట్ జనరేట్ చేయడం
+        response = model.generate_content(content_parts)
 
         return {
             "status": "success",
             "exam_type": exam_type,
-            "answer": answer_text,
+            "answer": response.text if response.text else "సమాధానం రాలేదు.",
         }
 
     except Exception as err:
