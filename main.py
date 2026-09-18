@@ -9,10 +9,8 @@ import httpx
 
 app = FastAPI(title="Check It AI Backend")
 
-# తాజా Gemini API Key
-GEMINI_API_KEY = (
-    "AQ.Ab8RN6LE27ubnYqLNYoXwOT1DYGMxvjcYiu7OGEZwFHbh5BEUA"
-)
+# మీ తాజా Gemini API Key
+GEMINI_API_KEY = "AQ.Ab8RN6I7CkuWtVTdgnevSwmLCc_TREgydRPP_qQjg1TNVyq7Tw"
 
 # AWS S3 సెటప్ (ఐచ్ఛికం)
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
@@ -79,11 +77,12 @@ async def check_question(
                     {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
                 )
 
-        # cURL లో ఇచ్చిన ఖచ్చితమైన ఎండ్‌పాయింట్
-        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+        # Gemini REST URL (URL పారామీటర్‌గా కూడా key పాస్ చేస్తున్నాం)
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
 
         headers = {
             "Content-Type": "application/json",
+            "Authorization": f"Bearer {GEMINI_API_KEY}",
             "X-goog-api-key": GEMINI_API_KEY,
         }
 
