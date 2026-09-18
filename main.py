@@ -1,6 +1,7 @@
 import io
 import os
 import uuid
+from typing import Optional
 import boto3
 from fastapi import FastAPI, File, Form, UploadFile
 from google import genai
@@ -9,12 +10,13 @@ from PIL import Image
 
 app = FastAPI(title="Check It AI Backend")
 
-# మీ అసలైన Gemini API Key
+# మీ Gemini API Key
 GEMINI_API_KEY = "AQ.Ab8RN6JMqkLx19e13LIoS-0BwU7sPDjVABxBrm8cVb7fGgHm5A"
 
+# Gemini Client ప్రారంభం
 ai_client = genai.Client(api_key=GEMINI_API_KEY)
 
-# AWS S3 సెటప్ (ఐచ్ఛికం - కీలు ఉంటేనే ఫోటోలు సేవ్ అవుతాయి)
+# AWS S3 సెటప్ (కీలు ఉంటేనే రన్ అవుతుంది, లేకపోతే సర్వర్ ఆగదు)
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 S3_BUCKET = os.getenv("AWS_S3_BUCKET", "check-it-ai-uploads")
@@ -36,7 +38,7 @@ SYSTEM_PROMPT = """
 విద్యార్థులకు EAMCET, JEE, NEET, CA, Groups, UPSC వంటి అన్ని రకాల పోటీ పరీక్షలకు ఖచ్చితమైన సమాధానాలు, స్టెప్-బై-స్టెప్ సొల్యూషన్స్ మరియు కెరీర్ గైడెన్స్ అందించాలి.
 - విద్యార్థి సొల్యూషన్ రాసి ఫోటో పెడితే: అందులో తప్పు ఎక్కడ జరిగిందో గుర్తించి, సరైన పద్ధతిని వివరించు.
 - నేరుగా ప్రశ్న అడిగితే: సులభమైన వివరణతో పాటు ముఖ్యమైన కాన్సెప్ట్ మరియు ఫార్ములాను స్పష్టంగా రాయి.
-- సమాధానం విద్యార్థికి సులభంగా అర్థమయ్యేలా స్పష్టంగా అందించు.
+- సమాధానం విద్యార్థికి సులభంగా అర్థమయ్యేలా అందించు.
 """
 
 
@@ -50,9 +52,9 @@ def root():
 
 @app.post("/check")
 async def check_question(
-    question: str = Form(None),
+    question: Optional[str] = Form(None),
     exam_type: str = Form("General"),
-    file: UploadFile = File(None),
+    file: Optional[UploadFile] = File(None),
 ):
     contents = []
     user_prompt = f"[Exam Category: {exam_type}]\n"
@@ -65,8 +67,10 @@ async def check_question(
     contents.append(user_prompt)
     s3_path = None
 
-    if file:
+    # ఫోటో అప్‌లోడ్ చేసి ఉంటే ప్రాసెస్ చేయడం
+    if file and file.filename:
         file_bytes = await file.read()
+
         if s3_client:
             try:
                 unique_filename = f"questions/{uuid.uuid4()}-{file.filename}"
@@ -80,9 +84,13 @@ async def check_question(
             except Exception as e:
                 print(f"S3 Upload Warning: {e}")
 
-        image = Image.open(io.BytesIO(file_bytes))
-        contents.append(image)
+        try:
+            image = Image.open(io.BytesIO(file_bytes))
+            contents.append(image)
+        except Exception as e:
+            print(f"Image open error: {e}")
 
+    # Gemini మోడల్ ద్వారా విశ్లేషణ
     response = ai_client.models.generate_content(
         model="gemini-2.5-flash",
         contents=contents,
