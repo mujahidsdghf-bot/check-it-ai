@@ -9,8 +9,11 @@ import httpx
 
 app = FastAPI(title="Check It AI Backend")
 
-# Render Environment Variables నుండి API కీని తీసుకుంటుంది
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# Render Environment Variables నుండి లేదా డీఫాల్ట్‌గా మీ తాజా కీ
+GEMINI_API_KEY = os.getenv(
+    "GEMINI_API_KEY",
+    "AQ.Ab8RN6KRDiRukL3Xy21q1LnU_LP9FlC65Si8u_KpA7fWAeJ63w",
+).strip()
 
 # AWS S3 సెటప్ (ఐచ్ఛికం)
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
@@ -47,12 +50,6 @@ async def check_question(
     file: Optional[UploadFile] = File(None),
 ):
     try:
-        if not GEMINI_API_KEY:
-            return {
-                "status": "error",
-                "message": "Render లో GEMINI_API_KEY ఎన్విరాన్మెంట్ వేరియబుల్ సెట్ చేయలేదు.",
-            }
-
         prompt_text = (
             f"[Exam Category: {exam_type}]\n"
             f"Question: {question if question else 'దయచేసి వివరణ ఇవ్వండి.'}"
@@ -83,12 +80,12 @@ async def check_question(
                     {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
                 )
 
-        # Google AI Studio అధికారిక మోడల్ ఎండ్‌పాయింట్
-        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+        # AI Studio cURL లో సూచించిన అధికారిక మోడల్ ఎండ్‌పాయింట్
+        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 
         headers = {
             "Content-Type": "application/json",
-            "X-goog-api-key": GEMINI_API_KEY.strip(),
+            "X-goog-api-key": GEMINI_API_KEY,
         }
 
         payload = {
