@@ -1,5 +1,6 @@
 import io
 import os
+import traceback
 import uuid
 from typing import Optional
 import boto3
@@ -10,13 +11,16 @@ from PIL import Image
 
 app = FastAPI(title="Check It AI Backend")
 
-# మీ Gemini API Key
+# మీ API Key
 GEMINI_API_KEY = "AQ.Ab8RN6JMqkLx19e13LIoS-0BwU7sPDjVABxBrm8cVb7fGgHm5A"
 
-# Gemini Client ప్రారంభం
-ai_client = genai.Client(api_key=GEMINI_API_KEY)
+try:
+    ai_client = genai.Client(api_key=GEMINI_API_KEY)
+except Exception as e:
+    ai_client = None
+    print(f"Client Init Error: {e}")
 
-# AWS S3 సెటప్ (కీలు ఉంటేనే రన్ అవుతుంది, లేకపోతే సర్వర్ ఆగదు)
+# AWS S3 సెటప్ (ఐచ్ఛికం)
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 S3_BUCKET = os.getenv("AWS_S3_BUCKET", "check-it-ai-uploads")
@@ -31,23 +35,17 @@ if AWS_ACCESS_KEY and AWS_SECRET_KEY:
             region_name=os.getenv("AWS_REGION", "ap-south-1"),
         )
     except Exception as e:
-        print(f"S3 Client Warning: {e}")
+        print(f"S3 Warning: {e}")
 
 SYSTEM_PROMPT = """
 నువ్వు 'Check It AI' ఎడ్యుకేషన్ అండ్ కెరీర్ మెంటార్. 
-విద్యార్థులకు EAMCET, JEE, NEET, CA, Groups, UPSC వంటి అన్ని రకాల పోటీ పరీక్షలకు ఖచ్చితమైన సమాధానాలు, స్టెప్-బై-స్టెప్ సొల్యూషన్స్ మరియు కెరీర్ గైడెన్స్ అందించాలి.
-- విద్యార్థి సొల్యూషన్ రాసి ఫోటో పెడితే: అందులో తప్పు ఎక్కడ జరిగిందో గుర్తించి, సరైన పద్ధతిని వివరించు.
-- నేరుగా ప్రశ్న అడిగితే: సులభమైన వివరణతో పాటు ముఖ్యమైన కాన్సెప్ట్ మరియు ఫార్ములాను స్పష్టంగా రాయి.
-- సమాధానం విద్యార్థికి సులభంగా అర్థమయ్యేలా అందించు.
+పోటీ పరీక్షలకు విద్యార్థులకు ఖచ్చితమైన సమాధానాలు, వివరణలు తెలుగులో అందించు.
 """
 
 
 @app.get("/")
 def root():
-    return {
-        "status": "online",
-        "message": "Check It AI API is live and running successfully!",
-    }
+    return {"status": "online", "message": "Check It AI API is live!"}
 
 
 @app.post("/check")
@@ -56,53 +54,71 @@ async def check_question(
     exam_type: str = Form("General"),
     file: Optional[UploadFile] = File(None),
 ):
-    contents = []
-    user_prompt = f"[Exam Category: {exam_type}]\n"
+    try:
+        if not ai_client:
+            return {
+                "status": "error",
+                "message": "AI Client ప్రారంభం కాలేదు. API Key చెక్ చేయండి.",
+            }
 
-    if question:
-        user_prompt += f"Question: {question}\n"
-    else:
-        user_prompt += "దయచేసి ఈ ఫోటోలోని ప్రశ్నను విశ్లేషించి, పూర్తి సమాధానం మరియు వివరణ ఇవ్వండి."
+        contents = []
+        user_prompt = f"[Exam Category: {exam_type}]\n"
 
-    contents.append(user_prompt)
-    s3_path = None
+        if question:
+            user_prompt += f"Question: {question}\n"
+        else:
+            user_prompt += "దయచేసి ఈ ప్రశ్నకు పూర్తి వివరణ ఇవ్వండి."
 
-    # ఫోటో అప్‌లోడ్ చేసి ఉంటే ప్రాసెస్ చేయడం
-    if file and file.filename:
-        file_bytes = await file.read()
+        contents.append(user_prompt)
+        s3_path = None
 
-        if s3_client:
-            try:
-                unique_filename = f"questions/{uuid.uuid4()}-{file.filename}"
-                s3_client.put_object(
-                    Bucket=S3_BUCKET,
-                    Key=unique_filename,
-                    Body=file_bytes,
-                    ContentType=file.content_type,
-                )
-                s3_path = unique_filename
-            except Exception as e:
-                print(f"S3 Upload Warning: {e}")
+        # ఫోటో ఉంటే ప్రాసెస్ చేయడం
+        if file and file.filename:
+            file_bytes = await file.read()
+            if len(file_bytes) > 0:
+                if s3_client:
+                    try:
+                        unique_filename = (
+                            f"questions/{uuid.uuid4()}-{file.filename}"
+                        )
+                        s3_client.put_object(
+                            Bucket=S3_BUCKET,
+                            Key=unique_filename,
+                            Body=file_bytes,
+                            ContentType=file.content_type,
+                        )
+                        s3_path = unique_filename
+                    except Exception as s3_err:
+                        print(f"S3 Upload Error: {s3_err}")
 
-        try:
-            image = Image.open(io.BytesIO(file_bytes))
-            contents.append(image)
-        except Exception as e:
-            print(f"Image open error: {e}")
+                try:
+                    image = Image.open(io.BytesIO(file_bytes))
+                    contents.append(image)
+                except Exception as img_err:
+                    print(f"Image Error: {img_err}")
 
-    # Gemini మోడల్ ద్వారా విశ్లేషణ
-    response = ai_client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=contents,
-        config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
-            temperature=0.3,
-        ),
-    )
+        # Gemini కాల్
+        response = ai_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                temperature=0.3,
+            ),
+        )
 
-    return {
-        "status": "success",
-        "exam_type": exam_type,
-        "s3_path": s3_path,
-        "answer": response.text,
-    }
+        return {
+            "status": "success",
+            "exam_type": exam_type,
+            "s3_path": s3_path,
+            "answer": response.text,
+        }
+
+    except Exception as err:
+        # ఏదైనా ఎర్రర్ వస్తే 500 క్రాష్ అవ్వకుండా వివరంగా చూపిస్తుంది
+        return {
+            "status": "error",
+            "error_type": str(type(err).__name__),
+            "error_details": str(err),
+            "traceback": traceback.format_exc(),
+        }
