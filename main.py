@@ -9,13 +9,12 @@ import httpx
 
 app = FastAPI(title="Check It AI Backend")
 
-# Render Environment Variables నుండి లేదా డీఫాల్ట్ కీ
+# Render నుండి కీని తీసుకోవడం
 GEMINI_API_KEY = os.getenv(
     "GEMINI_API_KEY",
     "AQ.Ab8RN6KRDiRukL3Xy21q1LnU_LP9FlC65Si8u_KpA7fWAeJ63w",
 ).strip()
 
-# AWS S3 సెటప్ (ఐచ్ఛికం)
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 S3_BUCKET = os.getenv("AWS_S3_BUCKET", "check-it-ai-uploads")
@@ -80,10 +79,12 @@ async def check_question(
                     {"inline_data": {"mime_type": mime_type, "data": encoded_image}}
                 )
 
-        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+        # గూగుల్ లేటెస్ట్ v1 ఎండ్‌పాయింట్ (Bearer మరియు X-goog-api-key రెండూ సపోర్ట్ చేస్తుంది)
+        url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent"
 
         headers = {
             "Content-Type": "application/json",
+            "Authorization": f"Bearer {GEMINI_API_KEY}",
             "X-goog-api-key": GEMINI_API_KEY,
         }
 
