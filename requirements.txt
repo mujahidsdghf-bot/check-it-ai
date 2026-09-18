@@ -1,6 +1,5 @@
 fastapi
 uvicorn
 python-multipart
-httpx
-pillow
+google-generativeai
 boto3
