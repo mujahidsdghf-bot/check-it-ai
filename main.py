@@ -9,13 +9,16 @@ from google.cloud import aiplatform
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part
 
+# Render లో ఉన్న సీక్రెట్ ఫైల్ పాత్‌ను గూగుల్ క్లౌడ్‌కు అనుసంధానించడం
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/credentials.json"
+
 app = FastAPI(title="Check It AI Backend - Vertex AI")
 
-# Render లో ఉన్న ప్రాజెక్ట్ వివరాలు మరియు టోకెన్ సెటప్
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "your-google-cloud-project-id")
+# ప్రాజెక్ట్ వివరాలు మరియు రీజియన్ సెటప్ (కొత్త ప్రాజెక్ట్ పేరుతో)
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "check-it-ai")
 REGION = os.getenv("GOOGLE_CLOUD_REGION", "us-central1")
 
-# Vertex AI ఇనిషియలైజేషన్ (AQ టోకెన్ తో పనిచేస్తుంది)
+# Vertex AI ఇనిషియలైజేషన్
 try:
     vertexai.init(project=PROJECT_ID, location=REGION)
 except Exception as e:
