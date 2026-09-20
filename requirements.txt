@@ -1,5 +1,7 @@
 fastapi
 uvicorn
-python-multipart
-google-cloud-aiplatform
+google-generativeai
 boto3
+pydantic
+python-multipart
+requests
