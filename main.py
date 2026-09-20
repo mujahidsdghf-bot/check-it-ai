@@ -1,28 +1,17 @@
-import base64
 import os
 import traceback
 import uuid
 from typing import Optional
 import boto3
 from fastapi import FastAPI, File, Form, UploadFile
-from google.cloud import aiplatform
-import vertexai
-from vertexai.generative_models import GenerativeModel, Part
+import google.generativeai as genai
 
-# Render లో ఉన్న సీక్రెట్ ఫైల్ పాత్‌ను గూగుల్ క్లౌడ్‌కు అనుసంధానించడం
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/credentials.json"
+app = FastAPI(title="Check It AI Backend - AI Studio API")
 
-app = FastAPI(title="Check It AI Backend - Vertex AI")
-
-# ప్రాజెక్ట్ వివరాలు మరియు రీజియన్ సెటప్ (కొత్త ప్రాజెక్ట్ పేరుతో)
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "check-it-ai")
-REGION = os.getenv("GOOGLE_CLOUD_REGION", "us-central1")
-
-# Vertex AI ఇనిషియలైజేషన్
-try:
-    vertexai.init(project=PROJECT_ID, location=REGION)
-except Exception as e:
-    print(f"Vertex Init Warning: {e}")
+# Google AI Studio API Key ద్వారా కాన్ఫిగర్ చేయడం
+api_key = os.getenv("GEMINI_API_KEY")
+if api_key:
+    genai.configure(api_key=api_key)
 
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -45,16 +34,16 @@ SYSTEM_INSTRUCTION = (
     "తెలుగులో స్పష్టమైన, సరైన సమాధానాలు అందించు."
 )
 
-# Vertex AI లోని జెమిని మోడల్
-model = GenerativeModel(
+# Google AI Studio జెమిని మోడల్ మరియు సిస్టమ్ ఇన్‌స్ట్రక్షన్ సెటప్
+model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
-    system_instruction=[SYSTEM_INSTRUCTION],
+    system_instruction=SYSTEM_INSTRUCTION,
 )
 
 
 @app.get("/")
 def root():
-    return {"status": "online", "message": "Check It AI Vertex API is live!"}
+    return {"status": "online", "message": "Check It AI API is live!"}
 
 
 @app.post("/check")
@@ -89,10 +78,13 @@ async def check_question(
                         print(f"S3 Upload Error: {s3_err}")
 
                 mime_type = file.content_type or "image/jpeg"
-                image_part = Part.from_data(data=file_bytes, mime_type=mime_type)
-                content_parts.append(image_part)
+                # Google AI Studio కి తగినట్లుగా ఫైల్ డేటాను జోడించడం
+                content_parts.append({
+                    "mime_type": mime_type,
+                    "data": file_bytes
+                })
 
-        # Vertex AI ద్వారా కంటెంట్ జనరేట్ చేయడం
+        # కంటెంట్ జనరేట్ చేయడం
         response = model.generate_content(content_parts)
 
         return {
