@@ -34,9 +34,9 @@ SYSTEM_INSTRUCTION = (
     "తెలుగులో స్పష్టమైన, సరైన సమాధానాలు అందించు."
 )
 
-# Google AI Studio జెమిని మోడల్ మరియు సిస్టమ్ ఇన్‌స్ట్రక్షన్ సెటప్
+# గూగుల్ ఏఐ స్టూడియో మోడల్ నేమ్ (gemini-flash-latest) మరియు సిస్టమ్ ఇన్‌స్ట్రక్షన్ సెటప్
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-flash-latest",
     system_instruction=SYSTEM_INSTRUCTION,
 )
 
@@ -78,7 +78,6 @@ async def check_question(
                         print(f"S3 Upload Error: {s3_err}")
 
                 mime_type = file.content_type or "image/jpeg"
-                # Google AI Studio కి తగినట్లుగా ఫైల్ డేటాను జోడించడం
                 content_parts.append({
                     "mime_type": mime_type,
                     "data": file_bytes
