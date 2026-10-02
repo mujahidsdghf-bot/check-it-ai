@@ -85,3 +85,7 @@ def chat():
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=5000)
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SENDER_EMAIL = "gyhiffss1@gmail.com"  # మీ అసలు జీమెయిల్ అడ్రస్ ఇక్కడ ఇవ్వండి
+SENDER_PASSWORD = "tzsj nbts kvnu fsti"  # గూగుల్ నుండి
