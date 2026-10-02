@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check It AI - Modern Platform</title>
+    <title>Check It AI - Secure Monitized Platform</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -12,6 +12,9 @@
             --text-muted: #94a3b8;
             --border-color: #334155;
             --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
         }
         * { box-sizing: border-box; }
         body {
@@ -25,20 +28,50 @@
             overflow: hidden;
         }
         .header {
-            padding: 15px 25px;
+            padding: 12px 20px;
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .logo {
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #fff;
+            cursor: pointer;
+        }
+        .header-right {
             display: flex;
-            align-items: center;
             gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .money-btn { background: var(--warning-color); color: #000; }
+        .sec-btn { background: var(--danger-color); }
+        .login-btn { background: var(--success-color); }
+        
+        .language-selector {
+            background: #0f172a;
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
         }
         .main-container {
             display: flex;
@@ -56,28 +89,24 @@
             padding: 20px;
             overflow-y: auto;
             width: 100%;
-            transition: all 0.3s ease;
         }
-        /* వెల్‌‌కమ్ హెడ్డింగ్ & సెంట్రల్ సెర్చ్ బాక్స్ */
         .welcome-box {
             text-align: center;
-            max-width: 700px;
+            max-width: 750px;
             width: 100%;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .welcome-box h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             margin-bottom: 10px;
             font-weight: 700;
             color: #fff;
         }
         .welcome-box p {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin-bottom: 25px;
         }
-
-        /* స్క్రీన్ మధ్యలో ఉండే మెయిన్ సెర్చ్ బాక్స్ */
         .central-search-box {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -94,9 +123,9 @@
             background: transparent;
             border: none;
             color: #fff;
-            font-size: 1.05rem;
+            font-size: 1rem;
             resize: none;
-            height: 60px;
+            height: 55px;
             outline: none;
             font-family: inherit;
         }
@@ -108,36 +137,35 @@
             padding-top: 10px;
         }
         .hint-text {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
         .search-actions button {
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 8px 22px;
+            padding: 8px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
-
-        /* క్విక్ ఆప్షన్ కార్డ్స్ (రీసెంట్ ఫీచర్లు) */
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            max-width: 700px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            max-width: 750px;
             width: 100%;
             margin-top: 20px;
         }
         .feature-card {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: 0.2s;
+            text-align: left;
         }
         .feature-card:hover {
             border-color: var(--accent-color);
@@ -145,16 +173,55 @@
         }
         .feature-card h4 {
             margin: 0 0 5px 0;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #fff;
         }
         .feature-card p {
             margin: 0;
-            font-size: 0.8rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
         }
 
-        /* చాట్ హిస్టరీ వ్యూ (సెర్చ్ చేసిన తర్వాత ఇక్కడ మెసేజ్ కనిపిస్తాయి) */
+        /* మోడల్స్ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 480px;
+            position: relative;
+        }
+        .modal-content h2 { margin-top: 0; color: #fff; font-size: 1.3rem; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px; background: #0f172a;
+            border: 1px solid var(--border-color); color: #fff; border-radius: 8px; outline: none;
+        }
+        .close-modal {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            color: #fff; font-size: 1.2rem; cursor: pointer;
+        }
+        .pricing-grid { display: flex; gap: 12px; margin-top: 15px; }
+        .price-card {
+            flex: 1; background: #0f172a; border: 1px solid var(--border-color);
+            padding: 12px; border-radius: 10px; text-align: center;
+        }
+        .price-card h3 { color: var(--accent-color); margin: 0 0 8px 0; font-size: 1rem; }
+        .price-card p { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* చాట్ వ్యూ */
         .chat-view {
             display: none;
             flex-direction: column;
@@ -166,150 +233,92 @@
             padding: 20px;
             gap: 15px;
         }
-        .chat-view.active {
-            display: flex;
-        }
+        .chat-view.active { display: flex; }
         .msg {
-            padding: 12px 16px;
-            border-radius: 10px;
-            max-width: 85%;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            white-space: pre-wrap;
+            padding: 12px 16px; border-radius: 10px; max-width: 85%; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap;
         }
-        .msg.user {
-            background-color: #2563eb;
-            color: #fff;
-            align-self: flex-end;
-        }
-        .msg.ai {
-            background-color: var(--panel-bg);
-            color: var(--text-color);
-            align-self: flex-start;
-            border: 1px solid var(--border-color);
-        }
+        .msg.user { background-color: #2563eb; color: #fff; align-self: flex-end; }
+        .msg.ai { background-color: var(--panel-bg); color: var(--text-color); align-self: flex-start; border: 1px solid var(--border-color); }
 
-        /* లైవ్ ప్రివ్యూ ప్యానెల్ (యాప్/వెబ్‌సైట్ రన్ అవ్వడానికి) */
+        /* ప్రివ్యూ ప్యానెల్ */
         .preview-pane {
-            width: 50%;
-            background: #ffffff;
-            display: none;
-            flex-direction: column;
-            border-left: 1px solid var(--border-color);
-            height: 100%;
+            width: 50%; background: #ffffff; display: none; flex-direction: column; border-left: 1px solid var(--border-color); height: 100%;
         }
-        .preview-pane.active {
-            display: flex;
-        }
+        .preview-pane.active { display: flex; }
         .preview-header {
-            background: #f1f5f9;
-            padding: 10px 15px;
-            font-size: 0.85rem;
-            color: #475569;
-            border-bottom: 1px solid #cbd5e1;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: #f1f5f9; padding: 10px 15px; font-size: 0.85rem; color: #475569;
+            border-bottom: 1px solid #cbd5e1; font-weight: 600; display: flex; justify-content: space-between; align-items: center;
         }
-        .download-btn {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .close-preview {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        iframe {
-            flex: 1;
-            width: 100%;
-            border: none;
-        }
+        .download-btn { background-color: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+        .close-preview { background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+        iframe { flex: 1; width: 100%; border: none; }
 
         @media screen and (max-width: 900px) {
-            .preview-pane.active {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 100;
-                height: 100%;
-            }
-            .welcome-box h1 {
-                font-size: 1.6rem;
-            }
+            .preview-pane.active { position: absolute; top: 0; left: 0; width: 100%; z-index: 100; height: 100%; }
+            .welcome-box h1 { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo" onclick="resetHome()" style="cursor: pointer;">⚡ Check It AI</div>
+        <div class="logo" onclick="resetHome()">⚡ Check It AI</div>
+        <div class="header-right">
+            <button class="nav-btn money-btn" onclick="openModal('monetize-modal')">💸 UPI</button>
+            <button class="nav-btn sec-btn" onclick="openModal('sec-modal')">🛡️️ Security</button>
+            <button class="nav-btn" onclick="openModal('pricing-modal')">💎 Pricing</button>
+            <button class="nav-btn login-btn" onclick="openModal('login-modal')">🔒 Login</button>
+            <select class="language-selector" id="lang-select" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="te">తెలుగు</option>
+                <option value="hi">हिन्दी</option>
+            </select>
+        </div>
     </div>
 
     <div class="main-container">
-        <!-- హోమ్ / సెంట్రల్ సెర్చ్ ఏరియా -->
         <div class="content-area" id="content-area">
             
-            <!-- హోమ్ పేజీ వ్యూ -->
             <div class="welcome-box" id="home-view">
-                <h1>మీకేం కావాలి? సృష్టించండి</h1>
-                <p>యాప్, వెబ్‌సైట్, కథలు, బిజినెస్ ప్లాన్స్ లేదా కోడింగ్ - ఏదైనా ఇక్కడ అడగండి.</p>
+                <h1 id="ui-title">What do you want to build?</h1>
+                <p id="ui-subtitle">Protected with Cyber & AI Security. Earn money via PhonePe UPI.</p>
 
-                <!-- సెంట్రల్ సెర్చ్ బాక్స్ -->
                 <div class="central-search-box">
-                    <textarea id="user-input" placeholder="ఉదాహరణకు: నాకు ఒక ఈ-కామర్స్ యాప్ కావాలి..." rows="2" onkeydown="handleKeyPress(event)"></textarea>
+                    <textarea id="user-input" placeholder="e.g., Build a secure store app with PhonePe..." rows="2" onkeydown="handleKeyPress(event)"></textarea>
                     <div class="search-actions">
-                        <span class="hint-text">Enter నొక్కి సెర్చ్ చేయండి</span>
-                        <button onclick="sendPrompt()">Generate 🚀</button>
+                        <span class="hint-text" id="ui-hint">Press Enter to search</span>
+                        <button onclick="sendPrompt()" id="ui-btn">Generate 🚀</button>
                     </div>
                 </div>
 
-                <!-- క్విక్ సజెషన్ కార్డ్స్ -->
                 <div class="features-grid">
-                    <div class="feature-card" onclick="quickAsk('నాకు ఒక ఫుడ్ డెలివరీ యాప్ కావాలి')">
-                        <h4>📱 యాప్ బిల్డర్</h4>
-                        <p>ఫుడ్, ఈ-కామర్స్ యాప్స్</p>
+                    <div class="feature-card" onclick="quickAsk('Build a secure store app with PhonePe UPI payment')">
+                        <h4 id="card-1-title">📱 Paid Apps</h4>
+                        <p id="card-1-desc">UPI & QR integration</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('ఒక ప్రొఫెషనల్ వెబ్‌సైట్ డిజైన్ చేయి')">
-                        <h4>🌐 వెబ్‌సైట్ డిజైన్</h4>
-                        <p>లైవ్ ప్రివ్యూ & కోడ్</p>
+                    <div class="feature-card" onclick="quickAsk('AI & Cyber Security Vulnerability Scan')">
+                        <h4 id="card-2-title">🛡️ Cyber Security</h4>
+                        <p id="card-2-desc">Threat detection & shields</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('ఒక ఆసక్తికరమైన కథ చెప్పు')">
-                        <h4>📖 కథలు & స్క్రిప్ట్స్</h4>
-                        <p>వీడియోలు, రీల్స్ స్క్రిప్ట్స్</p>
+                    <div class="feature-card" onclick="quickAsk('Mail Login and User Authentication Setup')">
+                        <h4 id="card-3-title">🔒 Mail Auth</h4>
+                        <p id="card-3-desc">Secure email login</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('నాకు ఒక బిజినెస్ ప్లాన్ కావాలి')">
-                        <h4>💡 బిజినెస్ ప్లాన్స్</h4>
-                        <p>స్టార్టప్ గైడెన్స్</p>
+                    <div class="feature-card" onclick="quickAsk('Subscription pricing and SaaS plans')">
+                        <h4 id="card-4-title">💎 Subscriptions</h4>
+                        <p id="card-4-desc">Pro tier monetization</p>
                     </div>
                 </div>
             </div>
 
-            <!-- చాట్ & రిజల్ట్స్ వ్యూ (సెర్చ్ చేశాక ఇది మారుతుంది) -->
-            <div class="chat-view" id="chat-view">
-                <!-- మెసేజ్‌లు ఇక్కడ వస్తాయి -->
-            </div>
-
+            <div class="chat-view" id="chat-view"></div>
         </div>
 
-        <!-- లైవ్ ప్రివ్యూ ప్యానెల్ -->
         <div class="preview-pane" id="preview-pane">
             <div class="preview-header">
-                <span>🌐 Live Preview & Download</span>
+                <span id="preview-title">🌐 Live Preview & Download</span>
                 <div style="display: flex; gap: 8px;">
-                    <button class="download-btn" onclick="downloadCode()">📥 Download Code</button>
+                    <button class="download-btn" onclick="downloadCode()" id="download-text">📥 Download</button>
                     <button class="close-preview" onclick="togglePreview(false)">❌ Close</button>
                 </div>
             </div>
@@ -317,9 +326,150 @@
         </div>
     </div>
 
+    <!-- UPI Modal -->
+    <div class="modal" id="monetize-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('monetize-modal')">&times;</button>
+            <h2>PhonePe & UPI Setup</h2>
+            <div class="form-group">
+                <label>PhonePe UPI ID (Kotak Bank)</label>
+                <input type="text" id="pay-upi" value="mujahidsdghf9@ybl">
+            </div>
+            <button class="nav-btn" style="width:100%; padding:10px; background:var(--warning-color); color:#000; font-weight:bold;" onclick="saveMonetization()">Save UPI ID 🚀</button>
+        </div>
+    </div>
+
+    <!-- Security Modal -->
+    <div class="modal" id="sec-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('sec-modal')">&times;</button>
+            <h2>Cyber & AI Security Status</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Your platform is secured with advanced AI firewalls, threat scanning, and encrypted code generation[span_0](start_span)[span_0](end_span).</p>
+            <div class="form-group">
+                <label>AI Guardrails: <span style="color:var(--success-color);">Active & Protected</span></label>
+                <label>Cyber Threat Shield: <span style="color:var(--success-color);">Enabled</span></label>
+            </div>
+            <button class="nav-btn" style="width:100%; padding:10px;" onclick="closeModal('sec-modal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Pricing Modal -->
+    <div class="modal" id="pricing-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-modal" onclick="closeModal('pricing-modal')">&times;</button>
+            <h2 style="text-align:center;">Subscription Plans</h2>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3>Free</h3>
+                    <p>Basic AI Builder</p>
+                    <p><b>$0 / mo</b></p>
+                    <button class="nav-btn" style="width:100%; margin-top:10px;" onclick="alert('Free active')">Current</button>
+                </div>
+                <div class="price-card" style="border-color:var(--accent-color);">
+                    <h3>Pro AI</h3>
+                    <p>Unlimited Apps & Cyber Shield</p>
+                    <p><b>$19 / mo</b></p>
+                    <button class="nav-btn" style="width:100%; margin-top:10px; background:var(--success-color);" onclick="alert('Upgrading...')">Upgrade</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mail Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('login-modal')">&times;</button>
+            <h2>Secure Mail Login</h2>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="login-email" placeholder="name@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password / OTP</label>
+                <input type="password" placeholder="••••••••">
+            </div>
+            <button class="nav-btn" style="width:100%; padding:10px; background:var(--success-color);" onclick="handleLogin()">Login / Verify</button>
+        </div>
+    </div>
+
     <script>
         const BACKEND_URL = "https://check-it-ai.onrender.com";
         let lastGeneratedCode = "";
+        let userUpiId = "mujahidsdghf9@ybl";
+
+        const translations = {
+            en: {
+                title: "What do you want to build?",
+                subtitle: "Protected with Cyber & AI Security. Earn money via PhonePe UPI.",
+                placeholder: "e.g., Build a secure store app with PhonePe...",
+                hint: "Press Enter to search",
+                btn: "Generate 🚀",
+                c1t: "📱 Paid Apps", c1d: "UPI & QR integration",
+                c2t: "🛡️ Cyber Security", c2d: "Threat detection & shields",
+                c3t: "🔒 Mail Auth", c3d: "Secure email login",
+                c4t: "💎 Subscriptions", c4d: "Pro tier monetization"
+            },
+            te: {
+                title: "మీకేం కావాలి? సృష్టించండి",
+                subtitle: "సైబర్ & ఏఐ సెక్యూరిటీ రక్షణతో. PhonePe UPI ద్వారా డబ్బులు సంపాదించండి.",
+                placeholder: "ఉదాహరణకు: PhonePe పేమెంట్‌తో స్టోర్ యాప్ చేయి...",
+                hint: "Enter నొక్కి సెర్చ్ చేయండి",
+                btn: "Generate 🚀",
+                c1t: "📱 పెయిడ్ యాప్స్", c1d: "UPI & QR ఇంటిగ్రేషన్",
+                c2t: "🛡️ సైబర్ సెక్యూరిటీ", c2d: "త్రెట్ డిటెక్షన్ & షీల్డ్స్",
+                c3t: "🔒 మెయిల్ లాగిన్", c3d: "సెక్యూర్డ్ ఈమెయిల్ లాగిన్",
+                c4t: "💎 సబ్‌స్క్రిప్షన్స్", c4d: "ప్రో టైర్ మానిటైజేషన్"
+            },
+            hi: {
+                title: "आप क्या बनाना चाहते हैं?",
+                subtitle: "साइबर और एआई सुरक्षा के साथ सुरक्षित। PhonePe UPI से कमाई करें।",
+                placeholder: "जैसे: PhonePe भुगतान के साथ स्टोर ऐप बनाएं...",
+                hint: "खोजने के लिए Enter दबाएं",
+                btn: "Generate 🚀",
+                c1t: "📱 पेड ऐप्स", c1d: "UPI और QR इंटीग्रेशन",
+                c2t: "🛡️ साइबर सुरक्षा", c2d: "खतरा पहचान और सुरक्षा",
+                c3t: "🔒 मेल लॉगिन", c3d: "सुरक्षित ईमेल लॉगिन",
+                c4t: "💎 सब्सक्रिप्शन", c4d: "प्रो मुद्रीकरण"
+            }
+        };
+
+        function changeLanguage() {
+            const lang = document.getElementById('lang-select').value;
+            const t = translations[lang];
+
+            document.getElementById('ui-title').innerText = t.title;
+            document.getElementById('ui-subtitle').innerText = t.subtitle;
+            document.getElementById('user-input').placeholder = t.placeholder;
+            document.getElementById('ui-hint').innerText = t.hint;
+            document.getElementById('ui-btn').innerText = t.btn;
+            
+            document.getElementById('card-1-title').innerText = t.c1t;
+            document.getElementById('card-1-desc').innerText = t.c1d;
+            document.getElementById('card-2-title').innerText = t.c2t;
+            document.getElementById('card-2-desc').innerText = t.c2d;
+            document.getElementById('card-3-title').innerText = t.c3t;
+            document.getElementById('card-3-desc').innerText = t.c3d;
+            document.getElementById('card-4-title').innerText = t.c4t;
+            document.getElementById('card-4-desc').innerText = t.c4d;
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function saveMonetization() {
+            const upi = document.getElementById('pay-upi').value;
+            if(!upi) { alert("Please enter UPI ID!"); return; }
+            userUpiId = upi;
+            alert("UPI ID (" + userUpiId + ") saved successfully!");
+            closeModal('monetize-modal');
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            if(!email) { alert("Please enter email!"); return; }
+            alert("Login successful for: " + email);
+            closeModal('login-modal');
+        }
 
         function handleKeyPress(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -344,18 +494,19 @@
             const input = document.getElementById('user-input');
             const chatView = document.getElementById('chat-view');
             const homeView = document.getElementById('home-view');
-            const text = input.value.trim();
+            let text = input.value.trim();
             if(!text) return;
 
-            // హోమ్ వ్యూ ని దాచిపెట్టి చాట్ వ్యూ చూపించు
+            text += ` (Include Cyber Security checks, Mail Login auth, Subscription logic, and PhonePe UPI: ${userUpiId}).`;
+
             homeView.style.display = 'none';
             chatView.classList.add('active');
 
-            chatView.innerHTML += `<div class="msg user">${text}</div>`;
+            chatView.innerHTML += `<div class="msg user">${input.value.trim()}</div>`;
             input.value = '';
             chatView.scrollTop = chatView.scrollHeight;
 
-            chatView.innerHTML += `<div class="msg ai" id="temp-load">ప్రసెస్ చేయబడుతోంది... వేచి ఉండండి ⚡</div>`;
+            chatView.innerHTML += `<div class="msg ai" id="temp-load">🛡️ Running Cyber & AI Security Check & Building... ⚡</div>`;
             chatView.scrollTop = chatView.scrollHeight;
 
             try {
@@ -377,11 +528,11 @@
                         togglePreview(true);
                     }
                 } else {
-                    chatView.innerHTML += `<div class="msg ai">సమస్య ఏర్పడింది: ${data.error_details}</div>`;
+                    chatView.innerHTML += `<div class="msg ai">Error: ${data.error_details}</div>`;
                 }
             } catch(e) {
                 document.getElementById('temp-load').remove();
-                chatView.innerHTML += `<div class="msg ai">కనెక్షన్ విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి.</div>`;
+                chatView.innerHTML += `<div class="msg ai">Connection failed. Please try again.</div>`;
             }
             chatView.scrollTop = chatView.scrollHeight;
         }
@@ -407,7 +558,7 @@
 
         function downloadCode() {
             if (!lastGeneratedCode) {
-                alert("డౌన్‌లోడ్ చేయడానికి ఎలాంటి కోడ్ లేదు!");
+                alert("No code generated to download!");
                 return;
             }
             let htmlCode = lastGeneratedCode;
