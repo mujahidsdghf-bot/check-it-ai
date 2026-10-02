@@ -24,48 +24,46 @@
             overflow: hidden;
         }
         .header {
-            padding: 15px 25px;
+            padding: 12px 20px;
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         .logo {
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
             width: 100%;
+            height: calc(100vh - 50px);
         }
         .chat-area {
             flex: 1;
             display: flex;
             flex-direction: column;
-            position: relative;
             background: var(--bg-color);
             height: 100%;
+            position: relative;
         }
         .chat-messages {
             flex: 1;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            padding-bottom: 120px;
+            gap: 12px;
         }
         .msg {
             padding: 12px 16px;
             border-radius: 10px;
-            max-width: 80%;
+            max-width: 85%;
             line-height: 1.6;
             font-size: 0.95rem;
             white-space: pre-wrap;
@@ -81,54 +79,45 @@
             align-self: flex-start;
             border: 1px solid var(--border-color);
         }
-        /* స్క్రీన్ మధ్యలో మరియు కింద అద్భుతంగా ఉండే సెర్చ్/చాట్ బార్ */
+        /* సెర్చ్/ఇన్‌పుట్ బార్ - స్క్రీన్ కింద పర్‌ఫెక్ట్‌గా ఫిక్స్ అయ్యేలా */
         .search-container {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 800px;
+            padding: 12px 15px;
             background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 10px 15px;
+            border-top: 1px solid var(--border-color);
             display: flex;
             gap: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             align-items: center;
+            flex-shrink: 0;
         }
         .search-container textarea {
             flex: 1;
-            background: transparent;
-            border: none;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
             color: #fff;
-            padding: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
             resize: none;
-            height: 24px;
-            max-height: 120px;
+            height: 42px;
             outline: none;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
         .search-container button {
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 0 20px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
-            transition: background 0.2s;
+            height: 42px;
+            font-size: 0.95rem;
         }
-        .search-container button:hover {
-            background-color: #2563eb;
-        }
-        /* ప్రివ్యూ ప్యానెల్ (యాప్/వెబ్‌సైట్ లైవ్‌లో కనిపించడానికి) */
+        /* ప్రివ్యూ ప్యానెల్ */
         .preview-pane {
             width: 50%;
             background: #ffffff;
-            display: none; /* యాప్ అడిగినప్పుడు ఆటోమేటిక్‌గా ఓపెన్ అవుతుంది */
+            display: none;
             flex-direction: column;
             border-left: 1px solid var(--border-color);
             height: 100%;
@@ -146,6 +135,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         .download-btn {
             background-color: #10b981;
@@ -157,6 +147,15 @@
             cursor: pointer;
             font-weight: bold;
         }
+        .close-preview {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
         iframe {
             flex: 1;
             width: 100%;
@@ -164,20 +163,13 @@
         }
 
         @media screen and (max-width: 900px) {
-            .preview-pane {
+            .preview-pane.active {
                 position: absolute;
                 top: 0;
                 left: 0;
                 width: 100%;
                 z-index: 100;
-            }
-            .close-preview {
-                background: #ef4444;
-                color: white;
-                border: none;
-                padding: 4px 8px;
-                border-radius: 4px;
-                cursor: pointer;
+                height: 100%;
             }
         }
     </style>
@@ -189,13 +181,13 @@
     </div>
 
     <div class="main-container">
-        <!-- Chat & Search Area -->
-        <div class="chat-area">
+        <!-- Chat Area -->
+        <div class="chat-area" id="chat-area">
             <div class="chat-messages" id="chat-messages">
-                <div class="msg ai">నమస్కారం! మీకు ఏ యాప్, వెబ్‌సైట్, లేదా సమాచారం కావాలన్నా ఇక్కడ అడగండి. (උదాహరణకు: "నాకు ఒక ఫుడ్ డెలివరీ యాప్ కావాలి" లేదా "ఒక మంచి కథ చెప్పు").</div>
+                <div class="msg ai">నమస్కారం! మీకు ఏ యాప్, వెబ్‌సైట్, లేదా సమాచారం కావాలన్నా కింద ఉన్న బాక్స్‌లో టైప్ చేసి అడగండి.</div>
             </div>
 
-            <!-- సెర్చ్ బార్ -->
+            <!-- సెర్చ్/ఇన్‌పుట్ బార్ -->
             <div class="search-container">
                 <textarea id="user-input" placeholder="మీకేం కావాలి? ఇక్కడ టైప్ చేయండి..." rows="1" onkeydown="handleKeyPress(event)"></textarea>
                 <button onclick="sendPrompt()">Build / Ask</button>
@@ -208,7 +200,7 @@
                 <span>🌐 Live App / Website Preview</span>
                 <div style="display: flex; gap: 8px;">
                     <button class="download-btn" onclick="downloadCode()">📥 Download</button>
-                    <button class="close-preview" onclick="togglePreview(false)" style="display:none;" id="close-btn">❌ Close</button>
+                    <button class="close-preview" onclick="togglePreview(false)">❌ Close</button>
                 </div>
             </div>
             <iframe id="live-preview"></iframe>
@@ -253,7 +245,6 @@
                     lastGeneratedCode = data.response;
                     messages.innerHTML += `<div class="msg ai">${data.response}</div>`;
                     
-                    // ఒకవేళ యాప్ లేదా వెబ్‌సైట్ కోడ్ వస్తే ఆటోమేటిక్‌గా లైవ్ ప్రివ్యూ చూపించు
                     if (data.response.includes("<html") || data.response.includes("<!DOCTYPE") || data.response.includes("<div")) {
                         renderPreview(data.response);
                         togglePreview(true);
@@ -282,9 +273,6 @@
             const pane = document.getElementById('preview-pane');
             if (show) {
                 pane.classList.add('active');
-                if (window.innerWidth <= 900) {
-                    document.getElementById('close-btn').style.display = 'inline-block';
-                }
             } else {
                 pane.classList.remove('active');
             }
