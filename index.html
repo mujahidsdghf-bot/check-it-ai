@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check It AI - Secure Monitized Platform</title>
+    <title>Check It AI - Global Platform</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -13,8 +13,6 @@
             --border-color: #334155;
             --accent-color: #3b82f6;
             --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
         }
         * { box-sizing: border-box; }
         body {
@@ -28,48 +26,41 @@
             overflow: hidden;
         }
         .header {
-            padding: 12px 20px;
+            padding: 12px 25px;
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
         }
         .logo {
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: #fff;
             cursor: pointer;
         }
         .header-right {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             align-items: center;
-            flex-wrap: wrap;
         }
-        .nav-btn {
-            background: #2563eb;
+        .login-btn-header {
+            background: var(--success-color);
             color: #fff;
             border: none;
-            padding: 6px 10px;
+            padding: 6px 14px;
             border-radius: 6px;
-            font-size: 0.78rem;
+            font-size: 0.85rem;
             cursor: pointer;
             font-weight: bold;
         }
-        .money-btn { background: var(--warning-color); color: #000; }
-        .sec-btn { background: var(--danger-color); }
-        .login-btn { background: var(--success-color); }
-        
         .language-selector {
             background: #0f172a;
             color: #fff;
             border: 1px solid var(--border-color);
-            padding: 5px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
             outline: none;
             cursor: pointer;
         }
@@ -92,19 +83,19 @@
         }
         .welcome-box {
             text-align: center;
-            max-width: 750px;
+            max-width: 800px;
             width: 100%;
             margin-bottom: 20px;
         }
         .welcome-box h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 10px;
             font-weight: 700;
             color: #fff;
         }
         .welcome-box p {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 1rem;
             margin-bottom: 25px;
         }
         .central-search-box {
@@ -123,9 +114,9 @@
             background: transparent;
             border: none;
             color: #fff;
-            font-size: 1rem;
+            font-size: 1.05rem;
             resize: none;
-            height: 55px;
+            height: 60px;
             outline: none;
             font-family: inherit;
         }
@@ -137,31 +128,32 @@
             padding-top: 10px;
         }
         .hint-text {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
         .search-actions button {
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 8px 20px;
+            padding: 8px 22px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
+        /* సర్వీసెస్ కార్డ్స్ గ్రిడ్ (6 ఆప్షన్లు) */
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 12px;
-            max-width: 750px;
+            max-width: 800px;
             width: 100%;
             margin-top: 20px;
         }
         .feature-card {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            padding: 12px;
+            padding: 12px 15px;
             border-radius: 10px;
             cursor: pointer;
             transition: 0.2s;
@@ -172,7 +164,7 @@
             transform: translateY(-2px);
         }
         .feature-card h4 {
-            margin: 0 0 5px 0;
+            margin: 0 0 4px 0;
             font-size: 0.9rem;
             color: #fff;
         }
@@ -199,13 +191,13 @@
             padding: 25px;
             border-radius: 16px;
             width: 90%;
-            max-width: 480px;
+            max-width: 420px;
             position: relative;
         }
         .modal-content h2 { margin-top: 0; color: #fff; font-size: 1.3rem; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
-        .form-group input, .form-group select {
+        .form-group input {
             width: 100%; padding: 10px; background: #0f172a;
             border: 1px solid var(--border-color); color: #fff; border-radius: 8px; outline: none;
         }
@@ -213,13 +205,6 @@
             position: absolute; top: 15px; right: 15px; background: none; border: none;
             color: #fff; font-size: 1.2rem; cursor: pointer;
         }
-        .pricing-grid { display: flex; gap: 12px; margin-top: 15px; }
-        .price-card {
-            flex: 1; background: #0f172a; border: 1px solid var(--border-color);
-            padding: 12px; border-radius: 10px; text-align: center;
-        }
-        .price-card h3 { color: var(--accent-color); margin: 0 0 8px 0; font-size: 1rem; }
-        .price-card p { font-size: 0.75rem; color: var(--text-muted); }
 
         /* చాట్ వ్యూ */
         .chat-view {
@@ -264,14 +249,18 @@
     <div class="header">
         <div class="logo" onclick="resetHome()">⚡ Check It AI</div>
         <div class="header-right">
-            <button class="nav-btn money-btn" onclick="openModal('monetize-modal')">💸 UPI</button>
-            <button class="nav-btn sec-btn" onclick="openModal('sec-modal')">🛡️️ Security</button>
-            <button class="nav-btn" onclick="openModal('pricing-modal')">💎 Pricing</button>
-            <button class="nav-btn login-btn" onclick="openModal('login-modal')">🔒 Login</button>
+            <button class="login-btn-header" onclick="openModal('login-modal')">🔒 Login / OTP</button>
             <select class="language-selector" id="lang-select" onchange="changeLanguage()">
                 <option value="en">English</option>
-                <option value="te">తెలుగు</option>
-                <option value="hi">हिन्दी</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="hi">हिन्दी (Hindi)</option>
+                <option value="es">Español (Spanish)</option>
+                <option value="fr">Français (French)</option>
+                <option value="de">Deutsch (German)</option>
+                <option value="ar">العربية (Arabic)</option>
+                <option value="zh">中文 (Chinese)</option>
+                <option value="ja">日本語 (Japanese)</option>
+                <option value="ru">Русский (Russian)</option>
             </select>
         </div>
     </div>
@@ -281,32 +270,41 @@
             
             <div class="welcome-box" id="home-view">
                 <h1 id="ui-title">What do you want to build?</h1>
-                <p id="ui-subtitle">Protected with Cyber & AI Security. Earn money via PhonePe UPI.</p>
+                <p id="ui-subtitle">Build apps, websites, AI videos, stories to 2 videos, and reels instantly.</p>
 
                 <div class="central-search-box">
-                    <textarea id="user-input" placeholder="e.g., Build a secure store app with PhonePe..." rows="2" onkeydown="handleKeyPress(event)"></textarea>
+                    <textarea id="user-input" placeholder="e.g., Build an app, AI video, or create reels..." rows="2" onkeydown="handleKeyPress(event)"></textarea>
                     <div class="search-actions">
                         <span class="hint-text" id="ui-hint">Press Enter to search</span>
                         <button onclick="sendPrompt()" id="ui-btn">Generate 🚀</button>
                     </div>
                 </div>
 
+                <!-- మనం ప్రొవైడ్ చేసే సర్వీసెస్ బాక్సులు (6 ఆప్షన్లు) -->
                 <div class="features-grid">
-                    <div class="feature-card" onclick="quickAsk('Build a secure store app with PhonePe UPI payment')">
-                        <h4 id="card-1-title">📱 Paid Apps</h4>
-                        <p id="card-1-desc">UPI & QR integration</p>
+                    <div class="feature-card" onclick="quickAsk('Build a fully functional mobile app')">
+                        <h4 id="card-1-title">📱 App Builder</h4>
+                        <p id="card-1-desc">Android & Web Apps with Live Preview</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('AI & Cyber Security Vulnerability Scan')">
-                        <h4 id="card-2-title">🛡️ Cyber Security</h4>
-                        <p id="card-2-desc">Threat detection & shields</p>
+                    <div class="feature-card" onclick="quickAsk('Design a professional website')">
+                        <h4 id="card-2-title">🌐 Website Design</h4>
+                        <p id="card-2-desc">Responsive layouts & instant code download</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('Mail Login and User Authentication Setup')">
-                        <h4 id="card-3-title">🔒 Mail Auth</h4>
-                        <p id="card-3-desc">Secure email login</p>
+                    <div class="feature-card" onclick="quickAsk('Create an AI video generation script and preview')">
+                        <h4 id="card-3-title">🎬 AI Video Creation</h4>
+                        <p id="card-3-desc">Generate AI video concepts & scenes</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('Subscription pricing and SaaS plans')">
-                        <h4 id="card-4-title">💎 Subscriptions</h4>
-                        <p id="card-4-desc">Pro tier monetization</p>
+                    <div class="feature-card" onclick="quickAsk('Convert this story into 2 engaging videos')">
+                        <h4 id="card-4-title">📖 Story to 2 Videos</h4>
+                        <p id="card-4-desc">Split story scenes into 2 videos</p>
+                    </div>
+                    <div class="feature-card" onclick="quickAsk('Create viral reels and shorts editing script')">
+                        <h4 id="card-5-title">⚡ Create Reels & Shorts</h4>
+                        <p id="card-5-desc">Viral short-form video editor scripts</p>
+                    </div>
+                    <div class="feature-card" onclick="quickAsk('Give me a complete startup business plan')">
+                        <h4 id="card-6-title">💡 Business Plans</h4>
+                        <p id="card-6-desc">Startup strategies & financial scaling</p>
                     </div>
                 </div>
             </div>
@@ -326,116 +324,79 @@
         </div>
     </div>
 
-    <!-- UPI Modal -->
-    <div class="modal" id="monetize-modal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal('monetize-modal')">&times;</button>
-            <h2>PhonePe & UPI Setup</h2>
-            <div class="form-group">
-                <label>PhonePe UPI ID (Kotak Bank)</label>
-                <input type="text" id="pay-upi" value="mujahidsdghf9@ybl">
-            </div>
-            <button class="nav-btn" style="width:100%; padding:10px; background:var(--warning-color); color:#000; font-weight:bold;" onclick="saveMonetization()">Save UPI ID 🚀</button>
-        </div>
-    </div>
-
-    <!-- Security Modal -->
-    <div class="modal" id="sec-modal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal('sec-modal')">&times;</button>
-            <h2>Cyber & AI Security Status</h2>
-            <p style="color:var(--text-muted); font-size:0.9rem;">Your platform is secured with advanced AI firewalls, threat scanning, and encrypted code generation[span_0](start_span)[span_0](end_span).</p>
-            <div class="form-group">
-                <label>AI Guardrails: <span style="color:var(--success-color);">Active & Protected</span></label>
-                <label>Cyber Threat Shield: <span style="color:var(--success-color);">Enabled</span></label>
-            </div>
-            <button class="nav-btn" style="width:100%; padding:10px;" onclick="closeModal('sec-modal')">Close</button>
-        </div>
-    </div>
-
-    <!-- Pricing Modal -->
-    <div class="modal" id="pricing-modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <button class="close-modal" onclick="closeModal('pricing-modal')">&times;</button>
-            <h2 style="text-align:center;">Subscription Plans</h2>
-            <div class="pricing-grid">
-                <div class="price-card">
-                    <h3>Free</h3>
-                    <p>Basic AI Builder</p>
-                    <p><b>$0 / mo</b></p>
-                    <button class="nav-btn" style="width:100%; margin-top:10px;" onclick="alert('Free active')">Current</button>
-                </div>
-                <div class="price-card" style="border-color:var(--accent-color);">
-                    <h3>Pro AI</h3>
-                    <p>Unlimited Apps & Cyber Shield</p>
-                    <p><b>$19 / mo</b></p>
-                    <button class="nav-btn" style="width:100%; margin-top:10px; background:var(--success-color);" onclick="alert('Upgrading...')">Upgrade</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mail Login Modal -->
+    <!-- ఈమెయిల్ ఓటీపీ లాగిన్ మోడల్ -->
     <div class="modal" id="login-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('login-modal')">&times;</button>
-            <h2>Secure Mail Login</h2>
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="login-email" placeholder="name@example.com">
+            <h2 id="modal-heading">Email OTP Login</h2>
+            
+            <div class="form-group" id="email-group">
+                <label id="email-label">Enter your Email Address</label>
+                <input type="email" id="user-email" placeholder="name@example.com">
+                <button class="login-btn-header" style="width:100%; margin-top:10px;" onclick="sendOtpToEmail()">Send OTP ✉️️</button>
             </div>
-            <div class="form-group">
-                <label>Password / OTP</label>
-                <input type="password" placeholder="••••••••">
+
+            <div class="form-group" id="otp-group" style="display:none;">
+                <label id="otp-label">Enter 6-digit OTP sent to your Email</label>
+                <input type="text" id="user-otp" placeholder="123456" maxlength="6">
+                <button class="login-btn-header" style="width:100%; margin-top:10px; background:var(--accent-color);" onclick="verifyOtp()">Verify & Login ✅</button>
             </div>
-            <button class="nav-btn" style="width:100%; padding:10px; background:var(--success-color);" onclick="handleLogin()">Login / Verify</button>
         </div>
     </div>
 
     <script>
         const BACKEND_URL = "https://check-it-ai.onrender.com";
         let lastGeneratedCode = "";
-        let userUpiId = "mujahidsdghf9@ybl";
+        let generatedOtp = "";
 
         const translations = {
             en: {
                 title: "What do you want to build?",
-                subtitle: "Protected with Cyber & AI Security. Earn money via PhonePe UPI.",
-                placeholder: "e.g., Build a secure store app with PhonePe...",
-                hint: "Press Enter to search",
-                btn: "Generate 🚀",
-                c1t: "📱 Paid Apps", c1d: "UPI & QR integration",
-                c2t: "🛡️ Cyber Security", c2d: "Threat detection & shields",
-                c3t: "🔒 Mail Auth", c3d: "Secure email login",
-                c4t: "💎 Subscriptions", c4d: "Pro tier monetization"
+                subtitle: "Build apps, websites, AI videos, stories to 2 videos, and reels instantly.",
+                placeholder: "e.g., Build an app, AI video, or create reels...",
+                hint: "Press Enter to search", btn: "Generate 🚀",
+                c1t: "📱 App Builder", c1d: "Android & Web Apps with Live Preview",
+                c2t: "🌐 Website Design", c2d: "Responsive layouts & instant code download",
+                c3t: "🎬 AI Video Creation", c3d: "Generate AI video concepts & scenes",
+                c4t: "📖 Story to 2 Videos", c4d: "Split story scenes into 2 videos",
+                c5t: "⚡ Create Reels & Shorts", c5d: "Viral short-form video editor scripts",
+                c6t: "💡 Business Plans", c6d: "Startup strategies & financial scaling",
+                previewTitle: "🌐 Live Preview & Download", downloadText: "📥 Download",
+                modalHeading: "Email OTP Login", emailLabel: "Enter your Email Address", otpLabel: "Enter 6-digit OTP sent to your Email"
             },
             te: {
                 title: "మీకేం కావాలి? సృష్టించండి",
-                subtitle: "సైబర్ & ఏఐ సెక్యూరిటీ రక్షణతో. PhonePe UPI ద్వారా డబ్బులు సంపాదించండి.",
-                placeholder: "ఉదాహరణకు: PhonePe పేమెంట్‌తో స్టోర్ యాప్ చేయి...",
-                hint: "Enter నొక్కి సెర్చ్ చేయండి",
-                btn: "Generate 🚀",
-                c1t: "📱 పెయిడ్ యాప్స్", c1d: "UPI & QR ఇంటిగ్రేషన్",
-                c2t: "🛡️ సైబర్ సెక్యూరిటీ", c2d: "త్రెట్ డిటెక్షన్ & షీల్డ్స్",
-                c3t: "🔒 మెయిల్ లాగిన్", c3d: "సెక్యూర్డ్ ఈమెయిల్ లాగిన్",
-                c4t: "💎 సబ్‌స్క్రిప్షన్స్", c4d: "ప్రో టైర్ మానిటైజేషన్"
+                subtitle: "యాప్స్, వెబ్‌సైట్లు, ఏఐ వీడియోలు, స్టోరీ నుండి 2 వీడియోలు మరియు రీల్స్ తక్షణమే సృష్టించండి.",
+                placeholder: "ఉదాహరణకు: యాప్ చేయి, ఏఐ వీడియో లేదా రీల్స్ క్రియేట్ చేయి...",
+                hint: "Enter నొక్కి సెర్చ్ చేయండి", btn: "Generate 🚀",
+                c1t: "📱 యాప్ బిల్డర్", c1d: "లైవ్ ప్రివ్యూతో ఆండ్రాయిడ్ & వెబ్ యాప్స్",
+                c2t: "🌐 వెబ్‌సైట్ డిజైన్", c2d: "రెస్పాన్సివ్ లేఅవుట్స్ & కోడ్ డౌన్‌లోడ్",
+                c3t: "🎬 ఏఐ వీడియో క్రియేషన్", c3d: "ఏఐ వీడియో కాన్సెప్ట్స్ & సీన్స్ జనరేషన్",
+                c4t: "📖 స్టోరీ టూ 2 వీడియోస్", c4d: "కథను రెండు భాగాలుగా వీడియోలుగా మార్చడం",
+                c5t: "⚡ క్రియేట్ రీల్స్ & షార్ట్స్", c5d: "వైరల్ షార్ట్-ఫార్మ్ వీడియో స్క్రిప్ట్స్",
+                c6t: "💡 బిజినెస్ ప్లాన్స్", c6d: "స్టార్టప్ వ్యూహాలు & ఫైనాన్షియల్ ప్లానింగ్",
+                previewTitle: "🌐 Live Preview & Download", downloadText: "📥 Download Code",
+                modalHeading: "ఈమెయిల్ ఓటీపీ లాగిన్", emailLabel: "మీ ఈమెయిల్ అడ్రస్ ఇక్కడ ఇవ్వండి", otpLabel: "మీ ఈమెయిల్‌కు వచ్చిన 6 అంకెల ఓటీపీని ఎంటర్ చేయండి"
             },
             hi: {
                 title: "आप क्या बनाना चाहते हैं?",
-                subtitle: "साइबर और एआई सुरक्षा के साथ सुरक्षित। PhonePe UPI से कमाई करें।",
-                placeholder: "जैसे: PhonePe भुगतान के साथ स्टोर ऐप बनाएं...",
-                hint: "खोजने के लिए Enter दबाएं",
-                btn: "Generate 🚀",
-                c1t: "📱 पेड ऐप्स", c1d: "UPI और QR इंटीग्रेशन",
-                c2t: "🛡️ साइबर सुरक्षा", c2d: "खतरा पहचान और सुरक्षा",
-                c3t: "🔒 मेल लॉगिन", c3d: "सुरक्षित ईमेल लॉगिन",
-                c4t: "💎 सब्सक्रिप्शन", c4d: "प्रो मुद्रीकरण"
+                subtitle: "तुरंत ऐप्स, वेबसाइट, AI वीडियो, 2 वीडियो की कहानी और रील्स बनाएं।",
+                placeholder: "जैसे: ऐप बनाएं, AI वीडियो या रील्स बनाएं...",
+                hint: "खोजने के लिए Enter दबाएं", btn: "Generate 🚀",
+                c1t: "📱 ऐप बिल्डर", c1d: "लाइव पूर्वावलोकन के साथ एंड्रॉइड और वेब ऐप्स",
+                c2t: "🌐 वेबसाइट डिज़ाइन", c2d: "रिस्पॉन्सिव लेआउट और कोड डाउनलोड",
+                c3t: "🎬 AI वीडियो निर्माण", c3d: "AI वीडियो अवधारणाएँ और दृश्य जनरेशन",
+                c4t: "📖 कहानी से 2 वीडियो", c4d: "कहानी को 2 वीडियो दृश्यों में विभाजित करें",
+                c5t: "⚡ रील्स और शॉर्ट्स बनाएं", c5d: "वायरल शॉर्ट-फॉर्म वीडियो स्क्रिप्ट",
+                c6t: "💡 बिजनेस प्लान", c6d: "स्टार्टअप रणनीतियाँ और वित्तीय योजना",
+                previewTitle: "🌐 Live Preview & Download", downloadText: "📥 Download",
+                modalHeading: "ईमेल ओटीपी लॉगिन", emailLabel: "अपना ईमेल पता दर्ज करें", otpLabel: "अपने ईमेल पर भेजा गया 6-अंकों का ओटीपी दर्ज करें"
             }
         };
 
         function changeLanguage() {
             const lang = document.getElementById('lang-select').value;
-            const t = translations[lang];
+            const t = translations[lang] || translations['en'];
 
             document.getElementById('ui-title').innerText = t.title;
             document.getElementById('ui-subtitle').innerText = t.subtitle;
@@ -451,24 +412,44 @@
             document.getElementById('card-3-desc').innerText = t.c3d;
             document.getElementById('card-4-title').innerText = t.c4t;
             document.getElementById('card-4-desc').innerText = t.c4d;
+            document.getElementById('card-5-title').innerText = t.c5t;
+            document.getElementById('card-5-desc').innerText = t.c5d;
+            document.getElementById('card-6-title').innerText = t.c6t;
+            document.getElementById('card-6-desc').innerText = t.c6d;
+            document.getElementById('preview-title').innerText = t.previewTitle;
+            document.getElementById('download-text').innerText = t.downloadText;
+            document.getElementById('modal-heading').innerText = t.modalHeading;
+            document.getElementById('email-label').innerText = t.emailLabel;
+            document.getElementById('otp-label').innerText = t.otpLabel;
         }
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        function saveMonetization() {
-            const upi = document.getElementById('pay-upi').value;
-            if(!upi) { alert("Please enter UPI ID!"); return; }
-            userUpiId = upi;
-            alert("UPI ID (" + userUpiId + ") saved successfully!");
-            closeModal('monetize-modal');
+        function sendOtpToEmail() {
+            const email = document.getElementById('user-email').value;
+            if(!email || !email.includes('@')) {
+                alert("Please enter a valid email address!");
+                return;
+            }
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            alert("OTP sent successfully to " + email + "\n(For testing, your OTP is: " + generatedOtp + ")");
+            document.getElementById('email-group').style.display = 'none';
+            document.getElementById('otp-group').style.display = 'block';
         }
 
-        function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            if(!email) { alert("Please enter email!"); return; }
-            alert("Login successful for: " + email);
-            closeModal('login-modal');
+        function verifyOtp() {
+            const enteredOtp = document.getElementById('user-otp').value;
+            if(enteredOtp === generatedOtp) {
+                alert("Login Successful! Welcome to Check It AI.");
+                closeModal('login-modal');
+                document.getElementById('email-group').style.display = 'block';
+                document.getElementById('otp-group').style.display = 'none';
+                document.getElementById('user-email').value = '';
+                document.getElementById('user-otp').value = '';
+            } else {
+                alert("Invalid OTP! Please try again.");
+            }
         }
 
         function handleKeyPress(e) {
@@ -497,8 +478,6 @@
             let text = input.value.trim();
             if(!text) return;
 
-            text += ` (Include Cyber Security checks, Mail Login auth, Subscription logic, and PhonePe UPI: ${userUpiId}).`;
-
             homeView.style.display = 'none';
             chatView.classList.add('active');
 
@@ -506,7 +485,7 @@
             input.value = '';
             chatView.scrollTop = chatView.scrollHeight;
 
-            chatView.innerHTML += `<div class="msg ai" id="temp-load">🛡️ Running Cyber & AI Security Check & Building... ⚡</div>`;
+            chatView.innerHTML += `<div class="msg ai" id="temp-load">⚡ Processing your request... Please wait</div>`;
             chatView.scrollTop = chatView.scrollHeight;
 
             try {
