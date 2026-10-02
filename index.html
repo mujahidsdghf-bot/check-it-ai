@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check It AI - ChatGPT Style</title>
+    <title>Check It AI - World-Class Multi-Language Super Platform</title>
     <style>
         :root {
             --bg-color: #212121;
             --sidebar-bg: #171717;
             --text-color: #ececec;
             --accent-color: #2f2f2f;
-            --hover-color: #212121;
             --border-color: #2f2f2f;
-            --btn-color: #19c37d;
         }
         body {
             margin: 0;
@@ -23,7 +21,6 @@
             height: 100vh;
             overflow: hidden;
         }
-        /* Sidebar */
         .sidebar {
             width: 260px;
             background-color: var(--sidebar-bg);
@@ -73,7 +70,6 @@
         .menu-item:hover, .menu-item.active {
             background-color: var(--accent-color);
         }
-        /* Main Chat Area */
         .main-container {
             flex: 1;
             display: flex;
@@ -128,7 +124,6 @@
             border: none;
             padding-left: 0;
         }
-        /* Input Area */
         .input-container {
             position: absolute;
             bottom: 0;
@@ -183,17 +178,17 @@
 <body>
 
     <div class="sidebar">
-        <button class="new-chat-btn" onclick="location.reload()">➕ కొత్త చాట్ (New Chat)</button>
+        <button class="new-chat-btn" onclick="location.reload()">➕ New Chat</button>
         <div class="sidebar-menu">
-            <div class="menu-title">ఫీచర్లు & మోడ్‌లు</div>
-            <button class="menu-item active" onclick="setMode('General', event)">💬 జనరల్ చాట్</button>
-            <button class="menu-item" onclick="setMode('Story to Movie', event)">🎬 స్టోరీ టూ మూవీ</button>
-            <button class="menu-item" onclick="setMode('App & Website Builder', event)">💻 యాప్ / వెబ్ బిల్డర్</button>
-            <button class="menu-item" onclick="setMode('Python Mentor', event)">🐍 పైథాన్ మెంటార్</button>
-            <button class="menu-item" onclick="setMode('Design & Ads', event)">🎨 డిజైన్ & యాడ్స్</button>
-            <button class="menu-item" onclick="setMode('Video Creator', event)">🎥 వీడియో స్క్రిప్ట్స్</button>
-            <button class="menu-item" onclick="setMode('Business & Food Tricks', event)">📈 బిజినెస్ & ఫుడ్</button>
-            <button class="menu-item" onclick="setMode('Repair Tech', event)">🔧 రిపేర్ & రోబోటిక్స్</button>
+            <div class="menu-title">Features & Modes</div>
+            <button class="menu-item active" onclick="setMode('General', event)">💬 General Chat</button>
+            <button class="menu-item" onclick="setMode('Story to Movie', event)">🎬 Story to Movie</button>
+            <button class="menu-item" onclick="setMode('App & Website Builder', event)">💻 App & Web Builder</button>
+            <button class="menu-item" onclick="setMode('Python Mentor', event)">🐍 Python Mentor</button>
+            <button class="menu-item" onclick="setMode('Design & Ads', event)">🎨 Design & Ads</button>
+            <button class="menu-item" onclick="setMode('Video Creator', event)">🎥 Video Scripts</button>
+            <button class="menu-item" onclick="setMode('Business & Food Tricks', event)">📈 Business & Food</button>
+            <button class="menu-item" onclick="setMode('Repair Tech', event)">🔧 Repair & Robotics</button>
         </div>
     </div>
 
@@ -205,13 +200,13 @@
 
         <div class="chat-messages" id="chat-messages">
             <div class="message-wrapper ai">
-                <div class="message">నమస్తే! నేను 'Check It AI' అసిస్టెంట్‌ని. మీకు ఏ సహాయం కావాలి? (ఏ భాషలోనైనా అడగవచ్చు).</div>
+                <div class="message">Hello! I am 'Check It AI'. How can I help you today? (You can ask in any language, and I will reply in the exact same language).</div>
             </div>
         </div>
 
         <div class="input-container">
             <div class="input-box">
-                <textarea id="user-input" placeholder="మీ సందేశాన్ని ఇక్కడ టైప్ చేయండి..." rows="1" oninput="autoGrow(this)"></textarea>
+                <textarea id="user-input" placeholder="Type your message here (in any language)..." rows="1" oninput="autoGrow(this)"></textarea>
                 <button class="send-btn" onclick="sendMessage()">⬆</button>
             </div>
         </div>
@@ -219,7 +214,7 @@
 
     <script>
         let currentMode = "General";
-        const BACKEND_URL = "https://check-it-ai.onrender.com"; // మీ రెండర్ లింక్
+        const BACKEND_URL = "https://check-it-ai.onrender.com";
 
         function setMode(mode, event) {
             currentMode = mode;
@@ -239,7 +234,6 @@
             const text = inputField.value.trim();
             if(!text) return;
 
-            // యూజర్ మెసేజ్
             messageBox.innerHTML += `
                 <div class="message-wrapper user">
                     <div class="message">${text}</div>
@@ -248,11 +242,10 @@
             inputField.style.height = '24px';
             messageBox.scrollTop = messageBox.scrollHeight;
 
-            // లోడింగ్ మెసేజ్
             const loadingId = 'loading-' + Date.now();
             messageBox.innerHTML += `
                 <div class="message-wrapper ai" id="${loadingId}">
-                    <div class="message">యోచిస్తోంది...</div>
+                    <div class="message">Thinking...</div>
                 </div>`;
             messageBox.scrollTop = messageBox.scrollHeight;
 
@@ -276,20 +269,19 @@
                 } else {
                     messageBox.innerHTML += `
                         <div class="message-wrapper ai">
-                            <div class="message">సమస్య ఏర్పడింది: ${data.error_details}</div>
+                            <div class="message">Error: ${data.error_details}</div>
                         </div>`;
                 }
             } catch (err) {
                 document.getElementById(loadingId).remove();
                 messageBox.innerHTML += `
                     <div class="message-wrapper ai">
-                        <div class="message">సర్వర్ కనెక్షన్ విఫలమైంది.</div>
+                        <div class="message">Server connection failed.</div>
                     </div>`;
             }
             messageBox.scrollTop = messageBox.scrollHeight;
         }
 
-        // Enter నొక్కితే మెసేజ్ వెళ్లేలా చేయడం
         document.getElementById('user-input').addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
