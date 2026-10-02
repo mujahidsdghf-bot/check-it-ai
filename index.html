@@ -36,14 +36,14 @@
             color: #fff;
         }
         .mobile-tabs {
-            display: none;
+            display: none; /* జావాస్క్రిప్ట్ ద్వారా మొబైల్ అయితే ఆటోమేటిక్‌గా ఆన్ అవుతుంది */
             gap: 5px;
         }
         .mobile-tab-btn {
             background: #333;
             color: #fff;
             border: none;
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-radius: 4px;
             font-size: 0.8rem;
             cursor: pointer;
@@ -59,7 +59,7 @@
             width: 100%;
         }
         .chat-pane {
-            width: 45%;
+            width: 50%;
             display: flex;
             flex-direction: column;
             border-right: 1px solid var(--border-color);
@@ -127,7 +127,7 @@
             font-weight: bold;
         }
         .preview-pane {
-            width: 55%;
+            width: 50%;
             background: #ffffff;
             display: flex;
             flex-direction: column;
@@ -160,25 +160,13 @@
             border: none;
         }
 
-        /* మొబైల్ స్క్రీన్ లేదా చిన్న స్క్రీన్ల కోసం ఖచ్చితమైన సెటప్ */
-        @media screen and (max-width: 900px) {
-            .mobile-tabs {
-                display: flex !important;
-            }
-            .chat-pane {
-                width: 100% !important;
-                display: flex;
-            }
-            .preview-pane {
-                width: 100% !important;
-                display: none;
-            }
-            .chat-pane.mobile-hidden {
-                display: none !important;
-            }
-            .preview-pane.mobile-visible {
-                display: flex !important;
-            }
+        /* మొబైల్ క్లాసులు (JS ద్వారా ఆటోమేటిక్‌గా అప్లై అవుతాయి) */
+        .mobile-only-hide {
+            display: none !important;
+        }
+        .mobile-only-show {
+            display: flex !important;
+            width: 100% !important;
         }
     </style>
 </head>
@@ -186,13 +174,13 @@
 
     <div class="header">
         <div class="logo">⚡ Check It AI</div>
-        <div class="mobile-tabs" id="mobile-tabs-container">
+        <div class="mobile-tabs" id="mobile-tabs-container" style="display: none;">
             <button class="mobile-tab-btn active" id="btn-chat" onclick="switchTab('chat')">💬 Chat & Doubts</button>
             <button class="mobile-tab-btn" id="btn-preview" onclick="switchTab('preview')">🌐 Live Preview</button>
         </div>
     </div>
 
-    <div class="workspace">
+    <div class="workspace" id="workspace">
         <!-- Chat Panel -->
         <div class="chat-pane" id="chat-pane">
             <div class="chat-messages" id="chat-messages">
@@ -217,6 +205,29 @@
     <script>
         const BACKEND_URL = "https://check-it-ai.onrender.com";
         let lastGeneratedCode = "";
+        let isMobile = false;
+
+        // పేజీ లోడ్ అయిన వెంటనే స్క్రీన్ వెడల్పును బట్టి మొబైలా కాదా అని డిటెక్ట్ చేయడం
+        function checkScreenSize() {
+            if (window.innerWidth <= 900) {
+                isMobile = true;
+                document.getElementById('mobile-tabs-container').style.display = 'flex';
+                // మొబైల్ అయితే డీఫాల్ట్‌గా ప్రివ్యూని దాచిపెట్టి చాట్ చూపించు
+                switchTab('chat');
+            } else {
+                isMobile = false;
+                document.getElementById('mobile-tabs-container').style.display = 'none';
+                document.getElementById('chat-pane').classList.remove('mobile-only-hide', 'mobile-only-show');
+                document.getElementById('preview-pane').classList.remove('mobile-only-hide', 'mobile-only-show');
+                document.getElementById('chat-pane').style.width = '50%';
+                document.getElementById('preview-pane').style.width = '50%';
+                document.getElementById('chat-pane').style.display = 'flex';
+                document.getElementById('preview-pane').style.display = 'flex';
+            }
+        }
+
+        window.onload = checkScreenSize;
+        window.onresize = checkScreenSize;
 
         function switchTab(tabName) {
             const chatPane = document.getElementById('chat-pane');
@@ -224,14 +235,22 @@
             const btnChat = document.getElementById('btn-chat');
             const btnPreview = document.getElementById('btn-preview');
 
+            if (!isMobile) return; // డెస్క్‌టాప్ అయితే ట్యాబ్స్ అవసరం లేదు
+
             if (tabName === 'chat') {
-                chatPane.classList.remove('mobile-hidden');
-                previewPane.classList.remove('mobile-visible');
+                chatPane.classList.add('mobile-only-show');
+                chatPane.classList.remove('mobile-only-hide');
+                previewPane.classList.add('mobile-only-hide');
+                previewPane.classList.remove('mobile-only-show');
+                
                 btnChat.classList.add('active');
                 btnPreview.classList.remove('active');
             } else {
-                chatPane.classList.add('mobile-hidden');
-                previewPane.classList.add('mobile-visible');
+                previewPane.classList.add('mobile-only-show');
+                previewPane.classList.remove('mobile-only-hide');
+                chatPane.classList.add('mobile-only-hide');
+                chatPane.classList.remove('mobile-only-show');
+                
                 btnPreview.classList.add('active');
                 btnChat.classList.remove('active');
             }
@@ -266,8 +285,8 @@
                     
                     if (data.response.includes("<html") || data.response.includes("<!DOCTYPE") || data.response.includes("<div")) {
                         renderPreview(data.response);
-                        // మొబైల్‌లో యాప్ రెడీ కాగానే ఆటోమేటిక్‌గా ప్రివ్యూ ట్యాబ్‌కి మారుతుంది
-                        if (window.innerWidth <= 900) {
+                        // మొబైల్ అయితే యాప్ రెడీ కాగానే ఆటోమేటిక్‌గా ప్రివ్యూ ట్యాబ్‌కి మారుతుంది
+                        if (isMobile) {
                             switchTab('preview');
                         }
                     }
