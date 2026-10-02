@@ -29,6 +29,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 10;
         }
         .logo {
             font-weight: bold;
@@ -36,7 +37,7 @@
             color: #fff;
         }
         .mobile-tabs {
-            display: none; /* జావాస్క్రిప్ట్ ద్వారా మొబైల్ అయితే ఆటోమేటిక్‌గా ఆన్ అవుతుంది */
+            display: none;
             gap: 5px;
         }
         .mobile-tab-btn {
@@ -74,7 +75,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            padding-bottom: 80px;
+            padding-bottom: 90px; /* కింద బాక్స్ కింద అతుక్కోకుండా స్పేస్ */
         }
         .msg {
             padding: 10px 14px;
@@ -97,23 +98,25 @@
         .input-area {
             position: absolute;
             bottom: 0;
+            left: 0;
             width: 100%;
-            padding: 10px 15px;
-            background: var(--bg-color);
+            padding: 12px 15px;
+            background: var(--panel-bg);
             border-top: 1px solid var(--border-color);
             box-sizing: border-box;
             display: flex;
             gap: 8px;
+            z-index: 5;
         }
         .input-area textarea {
             flex: 1;
-            background: var(--panel-bg);
+            background: #121212;
             border: 1px solid var(--border-color);
             color: #fff;
-            padding: 8px;
+            padding: 10px;
             border-radius: 6px;
             resize: none;
-            height: 20px;
+            height: 24px;
             outline: none;
             font-family: inherit;
         }
@@ -121,7 +124,7 @@
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 0 14px;
+            padding: 0 16px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
@@ -160,13 +163,19 @@
             border: none;
         }
 
-        /* మొబైల్ క్లాసులు (JS ద్వారా ఆటోమేటిక్‌గా అప్లై అవుతాయి) */
+        /* మొబైల్ క్లాసులు */
         .mobile-only-hide {
             display: none !important;
         }
         .mobile-only-show {
             display: flex !important;
             width: 100% !important;
+        }
+
+        @media screen and (max-width: 900px) {
+            .mobile-tabs {
+                display: flex !important;
+            }
         }
     </style>
 </head>
@@ -175,7 +184,7 @@
     <div class="header">
         <div class="logo">⚡ Check It AI</div>
         <div class="mobile-tabs" id="mobile-tabs-container" style="display: none;">
-            <button class="mobile-tab-btn active" id="btn-chat" onclick="switchTab('chat')">💬 Chat & Doubts</button>
+            <button class="mobile-tab-btn active" id="btn-chat" onclick="switchTab('chat')">💬 Chat & Ask</button>
             <button class="mobile-tab-btn" id="btn-preview" onclick="switchTab('preview')">🌐 Live Preview</button>
         </div>
     </div>
@@ -184,10 +193,10 @@
         <!-- Chat Panel -->
         <div class="chat-pane" id="chat-pane">
             <div class="chat-messages" id="chat-messages">
-                <div class="msg ai">Hello! Ask me to build any app or website. If you have any doubts about the code or features, you can ask me right here!</div>
+                <div class="msg ai">Hello! Ask me to build any app or website here. You can type your request below!</div>
             </div>
             <div class="input-area">
-                <textarea id="user-input" placeholder="Ask anything or request an app..." rows="1"></textarea>
+                <textarea id="user-input" placeholder="Type here: e.g., Build a food delivery app..." rows="1"></textarea>
                 <button onclick="sendPrompt()">Send</button>
             </div>
         </div>
@@ -207,12 +216,10 @@
         let lastGeneratedCode = "";
         let isMobile = false;
 
-        // పేజీ లోడ్ అయిన వెంటనే స్క్రీన్ వెడల్పును బట్టి మొబైలా కాదా అని డిటెక్ట్ చేయడం
         function checkScreenSize() {
             if (window.innerWidth <= 900) {
                 isMobile = true;
                 document.getElementById('mobile-tabs-container').style.display = 'flex';
-                // మొబైల్ అయితే డీఫాల్ట్‌గా ప్రివ్యూని దాచిపెట్టి చాట్ చూపించు
                 switchTab('chat');
             } else {
                 isMobile = false;
@@ -235,7 +242,7 @@
             const btnChat = document.getElementById('btn-chat');
             const btnPreview = document.getElementById('btn-preview');
 
-            if (!isMobile) return; // డెస్క్‌టాప్ అయితే ట్యాబ్స్ అవసరం లేదు
+            if (!isMobile) return;
 
             if (tabName === 'chat') {
                 chatPane.classList.add('mobile-only-show');
@@ -266,7 +273,7 @@
             input.value = '';
             messages.scrollTop = messages.scrollHeight;
 
-            messages.innerHTML += `<div class="msg ai" id="temp-load">Thinking / Building...</div>`;
+            messages.innerHTML += `<div class="msg ai" id="temp-load">Building your app/website...</div>`;
             messages.scrollTop = messages.scrollHeight;
 
             try {
@@ -285,9 +292,9 @@
                     
                     if (data.response.includes("<html") || data.response.includes("<!DOCTYPE") || data.response.includes("<div")) {
                         renderPreview(data.response);
-                        // మొబైల్ అయితే యాప్ రెడీ కాగానే ఆటోమేటిక్‌గా ప్రివ్యూ ట్యాబ్‌కి మారుతుంది
                         if (isMobile) {
-                            switchTab('preview');
+                            // ఆటోమేటిక్‌గా ప్రివ్యూ చూడటానికి ప్రివ్యూ ట్యాబ్‌కి మారుతుంది (మీకు నచ్చితే దీన్ని ఉంచుకోవచ్చు)
+                            // switchTab('preview'); 
                         }
                     }
                 } else {
