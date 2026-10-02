@@ -275,9 +275,9 @@
         const res = await fetch(`${BACKEND_URL}/api/send-otp`, { 
             method: 'POST', 
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
             },
-            body: `email=${encodeURIComponent(email)}`
+            body: JSON.stringify({ email: email })
         });
         const data = await res.json();
         alert(data.message);
@@ -289,6 +289,7 @@
         alert("Connection error: " + e.message);
     }
 }
+
 
 
 
