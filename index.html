@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check It AI - Global Platform</title>
+    <title>Check It AI - Advanced Platform</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -13,6 +13,13 @@
             --border-color: #334155;
             --accent-color: #3b82f6;
             --success-color: #10b981;
+        }
+        .light-theme {
+            --bg-color: #f8fafc;
+            --panel-bg: #ffffff;
+            --text-color: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
         }
         * { box-sizing: border-box; }
         body {
@@ -24,6 +31,7 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            transition: background 0.3s, color 0.3s;
         }
         .header {
             padding: 12px 25px;
@@ -33,199 +41,92 @@
             justify-content: space-between;
             align-items: center;
         }
-        .logo {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #fff;
-            cursor: pointer;
+        .logo { font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+        .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .nav-btn {
+            background: var(--success-color); color: #fff; border: none;
+            padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: bold;
         }
-        .header-right {
-            display: flex;
-            gap: 12px;
-            align-items: center;
+        .theme-btn, .history-btn {
+            background: var(--panel-bg); color: var(--text-color); border: 1px solid var(--border-color);
+            padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer;
         }
-        .login-btn-header {
-            background: var(--success-color);
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .language-selector {
-            background: #0f172a;
-            color: #fff;
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            outline: none;
-            cursor: pointer;
+        .language-selector, .model-selector {
+            background: var(--panel-bg); color: var(--text-color);
+            border: 1px solid var(--border-color); padding: 6px 10px;
+            border-radius: 8px; font-size: 0.85rem; outline: none; cursor: pointer;
         }
         .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            width: 100%;
-            position: relative;
+            display: flex; flex: 1; overflow: hidden; width: 100%; position: relative;
         }
         .content-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-y: auto;
-            width: 100%;
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 20px; overflow-y: auto; width: 100%;
         }
-        .welcome-box {
-            text-align: center;
-            max-width: 800px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .welcome-box h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-            color: #fff;
-        }
-        .welcome-box p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 25px;
-        }
+        .welcome-box { text-align: center; max-width: 800px; width: 100%; margin-bottom: 20px; }
+        .welcome-box h1 { font-size: 2.2rem; margin-bottom: 10px; font-weight: 700; }
+        .welcome-box p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
         .central-search-box {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 15px;
-            width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            background: var(--panel-bg); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 15px; width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px;
         }
         .central-search-box textarea {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 1.05rem;
-            resize: none;
-            height: 60px;
-            outline: none;
-            font-family: inherit;
+            width: 100%; background: transparent; border: none; color: var(--text-color);
+            font-size: 1.05rem; resize: none; height: 60px; outline: none; font-family: inherit;
         }
         .search-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--border-color);
-            padding-top: 10px;
-        }
-        .hint-text {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--border-color); padding-top: 10px;
         }
         .search-actions button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 8px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.95rem;
+            background-color: var(--accent-color); color: white; border: none;
+            padding: 8px 22px; border-radius: 8px; cursor: pointer; font-weight: bold;
         }
-        /* సర్వీసెస్ కార్డ్స్ గ్రిడ్ (6 ఆప్షన్లు) */
         .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-            max-width: 800px;
-            width: 100%;
-            margin-top: 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px; max-width: 800px; width: 100%; margin-top: 20px;
         }
         .feature-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 12px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: left;
+            background: var(--panel-bg); border: 1px solid var(--border-color);
+            padding: 12px 15px; border-radius: 10px; cursor: pointer; transition: 0.2s; text-align: left;
         }
-        .feature-card:hover {
-            border-color: var(--accent-color);
-            transform: translateY(-2px);
-        }
-        .feature-card h4 {
-            margin: 0 0 4px 0;
-            font-size: 0.9rem;
-            color: #fff;
-        }
-        .feature-card p {
-            margin: 0;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
+        .feature-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
+        .feature-card h4 { margin: 0 0 4px 0; font-size: 0.9rem; }
+        .feature-card p { margin: 0; font-size: 0.72rem; color: var(--text-muted); }
 
         /* మోడల్స్ */
         .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 25px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 420px;
-            position: relative;
+            background: var(--panel-bg); border: 1px solid var(--border-color);
+            padding: 25px; border-radius: 16px; width: 90%; max-width: 420px; position: relative;
         }
-        .modal-content h2 { margin-top: 0; color: #fff; font-size: 1.3rem; }
+        .modal-content h2 { margin-top: 0; font-size: 1.3rem; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
         .form-group input {
-            width: 100%; padding: 10px; background: #0f172a;
-            border: 1px solid var(--border-color); color: #fff; border-radius: 8px; outline: none;
+            width: 100%; padding: 10px; background: var(--bg-color);
+            border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; outline: none;
         }
         .close-modal {
             position: absolute; top: 15px; right: 15px; background: none; border: none;
-            color: #fff; font-size: 1.2rem; cursor: pointer;
+            color: var(--text-color); font-size: 1.2rem; cursor: pointer;
         }
 
-        /* చాట్ వ్యూ */
         .chat-view {
-            display: none;
-            flex-direction: column;
-            width: 100%;
-            max-width: 800px;
-            height: 100%;
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            gap: 15px;
+            display: none; flex-direction: column; width: 100%; max-width: 800px;
+            height: 100%; flex: 1; overflow-y: auto; padding: 20px; gap: 15px;
         }
         .chat-view.active { display: flex; }
-        .msg {
-            padding: 12px 16px; border-radius: 10px; max-width: 85%; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap;
-        }
-        .msg.user { background-color: #2563eb; color: #fff; align-self: flex-end; }
-        .msg.ai { background-color: var(--panel-bg); color: var(--text-color); align-self: flex-start; border: 1px solid var(--border-color); }
+        .msg { padding: 12px 16px; border-radius: 10px; max-width: 85%; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; }
+        .msg.user { background-color: var(--accent-color); color: #fff; align-self: flex-end; }
+        .msg.ai { background-color: var(--panel-bg); border: 1px solid var(--border-color); align-self: flex-start; }
 
-        /* ప్రివ్యూ ప్యానెల్ */
         .preview-pane {
             width: 50%; background: #ffffff; display: none; flex-direction: column; border-left: 1px solid var(--border-color); height: 100%;
         }
@@ -234,14 +135,9 @@
             background: #f1f5f9; padding: 10px 15px; font-size: 0.85rem; color: #475569;
             border-bottom: 1px solid #cbd5e1; font-weight: 600; display: flex; justify-content: space-between; align-items: center;
         }
-        .download-btn { background-color: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+        .download-btn { background-color: var(--success-color); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
         .close-preview { background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
         iframe { flex: 1; width: 100%; border: none; }
-
-        @media screen and (max-width: 900px) {
-            .preview-pane.active { position: absolute; top: 0; left: 0; width: 100%; z-index: 100; height: 100%; }
-            .welcome-box h1 { font-size: 1.4rem; }
-        }
     </style>
 </head>
 <body>
@@ -249,18 +145,19 @@
     <div class="header">
         <div class="logo" onclick="resetHome()">⚡ Check It AI</div>
         <div class="header-right">
-            <button class="login-btn-header" onclick="openModal('login-modal')">🔒 Login / OTP</button>
+            <!-- ఏఐ మోడల్ సెలెక్టర్ -->
+            <select class="model-selector" id="ai-model">
+                <option value="gpt-4">GPT-4 Turbo</option>
+                <option value="claude-3">Claude 3.5 Sonnet</option>
+                <option value="deepseek">DeepSeek R1</option>
+            </select>
+            <!-- థీమ్ టోగుల్ (Dark / Light) -->
+            <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
+            <button class="nav-btn" onclick="openModal('login-modal')">🔒 Login / OTP</button>
             <select class="language-selector" id="lang-select" onchange="changeLanguage()">
                 <option value="en">English</option>
-                <option value="te">తెలుగు (Telugu)</option>
-                <option value="hi">हिन्दी (Hindi)</option>
-                <option value="es">Español (Spanish)</option>
-                <option value="fr">Français (French)</option>
-                <option value="de">Deutsch (German)</option>
-                <option value="ar">العربية (Arabic)</option>
-                <option value="zh">中文 (Chinese)</option>
-                <option value="ja">日本語 (Japanese)</option>
-                <option value="ru">Русский (Russian)</option>
+                <option value="te">తెలుగు</option>
+                <option value="hi">हिन्दी</option>
             </select>
         </div>
     </div>
@@ -270,41 +167,32 @@
             
             <div class="welcome-box" id="home-view">
                 <h1 id="ui-title">What do you want to build?</h1>
-                <p id="ui-subtitle">Build apps, websites, AI videos, stories to 2 videos, and reels instantly.</p>
+                <p id="ui-subtitle">Advanced AI Platform with Real Email OTP, Multi-Model Selection & Live Preview.</p>
 
                 <div class="central-search-box">
-                    <textarea id="user-input" placeholder="e.g., Build an app, AI video, or create reels..." rows="2" onkeydown="handleKeyPress(event)"></textarea>
+                    <textarea id="user-input" placeholder="e.g., Build an e-commerce app or AI video..." rows="2" onkeydown="handleKeyPress(event)"></textarea>
                     <div class="search-actions">
                         <span class="hint-text" id="ui-hint">Press Enter to search</span>
                         <button onclick="sendPrompt()" id="ui-btn">Generate 🚀</button>
                     </div>
                 </div>
 
-                <!-- మనం ప్రొవైడ్ చేసే సర్వీసెస్ బాక్సులు (6 ఆప్షన్లు) -->
                 <div class="features-grid">
                     <div class="feature-card" onclick="quickAsk('Build a fully functional mobile app')">
-                        <h4 id="card-1-title">📱 App Builder</h4>
-                        <p id="card-1-desc">Android & Web Apps with Live Preview</p>
+                        <h4>📱 App Builder</h4>
+                        <p>Android & Web Apps</p>
                     </div>
                     <div class="feature-card" onclick="quickAsk('Design a professional website')">
                         <h4 id="card-2-title">🌐 Website Design</h4>
-                        <p id="card-2-desc">Responsive layouts & instant code download</p>
+                        <p>Responsive layouts</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('Create an AI video generation script and preview')">
-                        <h4 id="card-3-title">🎬 AI Video Creation</h4>
-                        <p id="card-3-desc">Generate AI video concepts & scenes</p>
+                    <div class="feature-card" onclick="quickAsk('Create an AI video generation script')">
+                        <h4>🎬 AI Video Creation</h4>
+                        <p>Generate video concepts</p>
                     </div>
                     <div class="feature-card" onclick="quickAsk('Convert this story into 2 engaging videos')">
-                        <h4 id="card-4-title">📖 Story to 2 Videos</h4>
-                        <p id="card-4-desc">Split story scenes into 2 videos</p>
-                    </div>
-                    <div class="feature-card" onclick="quickAsk('Create viral reels and shorts editing script')">
-                        <h4 id="card-5-title">⚡ Create Reels & Shorts</h4>
-                        <p id="card-5-desc">Viral short-form video editor scripts</p>
-                    </div>
-                    <div class="feature-card" onclick="quickAsk('Give me a complete startup business plan')">
-                        <h4 id="card-6-title">💡 Business Plans</h4>
-                        <p id="card-6-desc">Startup strategies & financial scaling</p>
+                        <h4>📖 Story to 2 Videos</h4>
+                        <p>Split story scenes</p>
                     </div>
                 </div>
             </div>
@@ -314,9 +202,9 @@
 
         <div class="preview-pane" id="preview-pane">
             <div class="preview-header">
-                <span id="preview-title">🌐 Live Preview & Download</span>
+                <span>🌐 Live Preview & Download</span>
                 <div style="display: flex; gap: 8px;">
-                    <button class="download-btn" onclick="downloadCode()" id="download-text">📥 Download</button>
+                    <button class="download-btn" onclick="downloadCode()">📥 Download Code</button>
                     <button class="close-preview" onclick="togglePreview(false)">❌ Close</button>
                 </div>
             </div>
@@ -328,18 +216,18 @@
     <div class="modal" id="login-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('login-modal')">&times;</button>
-            <h2 id="modal-heading">Email OTP Login</h2>
+            <h2>Email OTP Login</h2>
             
             <div class="form-group" id="email-group">
-                <label id="email-label">Enter your Email Address</label>
+                <label>Enter your Email Address</label>
                 <input type="email" id="user-email" placeholder="name@example.com">
-                <button class="login-btn-header" style="width:100%; margin-top:10px;" onclick="sendOtpToEmail()">Send OTP ✉️️</button>
+                <button class="nav-btn" style="width:100%; margin-top:10px;" onclick="sendOtpToEmail()">Send OTP ✉️</button>
             </div>
 
             <div class="form-group" id="otp-group" style="display:none;">
-                <label id="otp-label">Enter 6-digit OTP sent to your Email</label>
+                <label>Enter OTP sent to your Email</label>
                 <input type="text" id="user-otp" placeholder="123456" maxlength="6">
-                <button class="login-btn-header" style="width:100%; margin-top:10px; background:var(--accent-color);" onclick="verifyOtp()">Verify & Login ✅</button>
+                <button class="nav-btn" style="width:100%; margin-top:10px; background:var(--accent-color);" onclick="verifyOtp()">Verify & Login ✅</button>
             </div>
         </div>
     </div>
@@ -347,108 +235,56 @@
     <script>
         const BACKEND_URL = "https://check-it-ai.onrender.com";
         let lastGeneratedCode = "";
-        let generatedOtp = "";
 
-        const translations = {
-            en: {
-                title: "What do you want to build?",
-                subtitle: "Build apps, websites, AI videos, stories to 2 videos, and reels instantly.",
-                placeholder: "e.g., Build an app, AI video, or create reels...",
-                hint: "Press Enter to search", btn: "Generate 🚀",
-                c1t: "📱 App Builder", c1d: "Android & Web Apps with Live Preview",
-                c2t: "🌐 Website Design", c2d: "Responsive layouts & instant code download",
-                c3t: "🎬 AI Video Creation", c3d: "Generate AI video concepts & scenes",
-                c4t: "📖 Story to 2 Videos", c4d: "Split story scenes into 2 videos",
-                c5t: "⚡ Create Reels & Shorts", c5d: "Viral short-form video editor scripts",
-                c6t: "💡 Business Plans", c6d: "Startup strategies & financial scaling",
-                previewTitle: "🌐 Live Preview & Download", downloadText: "📥 Download",
-                modalHeading: "Email OTP Login", emailLabel: "Enter your Email Address", otpLabel: "Enter 6-digit OTP sent to your Email"
-            },
-            te: {
-                title: "మీకేం కావాలి? సృష్టించండి",
-                subtitle: "యాప్స్, వెబ్‌సైట్లు, ఏఐ వీడియోలు, స్టోరీ నుండి 2 వీడియోలు మరియు రీల్స్ తక్షణమే సృష్టించండి.",
-                placeholder: "ఉదాహరణకు: యాప్ చేయి, ఏఐ వీడియో లేదా రీల్స్ క్రియేట్ చేయి...",
-                hint: "Enter నొక్కి సెర్చ్ చేయండి", btn: "Generate 🚀",
-                c1t: "📱 యాప్ బిల్డర్", c1d: "లైవ్ ప్రివ్యూతో ఆండ్రాయిడ్ & వెబ్ యాప్స్",
-                c2t: "🌐 వెబ్‌సైట్ డిజైన్", c2d: "రెస్పాన్సివ్ లేఅవుట్స్ & కోడ్ డౌన్‌లోడ్",
-                c3t: "🎬 ఏఐ వీడియో క్రియేషన్", c3d: "ఏఐ వీడియో కాన్సెప్ట్స్ & సీన్స్ జనరేషన్",
-                c4t: "📖 స్టోరీ టూ 2 వీడియోస్", c4d: "కథను రెండు భాగాలుగా వీడియోలుగా మార్చడం",
-                c5t: "⚡ క్రియేట్ రీల్స్ & షార్ట్స్", c5d: "వైరల్ షార్ట్-ఫార్మ్ వీడియో స్క్రిప్ట్స్",
-                c6t: "💡 బిజినెస్ ప్లాన్స్", c6d: "స్టార్టప్ వ్యూహాలు & ఫైనాన్షియల్ ప్లానింగ్",
-                previewTitle: "🌐 Live Preview & Download", downloadText: "📥 Download Code",
-                modalHeading: "ఈమెయిల్ ఓటీపీ లాగిన్", emailLabel: "మీ ఈమెయిల్ అడ్రస్ ఇక్కడ ఇవ్వండి", otpLabel: "మీ ఈమెయిల్‌కు వచ్చిన 6 అంకెల ఓటీపీని ఎంటర్ చేయండి"
-            },
-            hi: {
-                title: "आप क्या बनाना चाहते हैं?",
-                subtitle: "तुरंत ऐप्स, वेबसाइट, AI वीडियो, 2 वीडियो की कहानी और रील्स बनाएं।",
-                placeholder: "जैसे: ऐप बनाएं, AI वीडियो या रील्स बनाएं...",
-                hint: "खोजने के लिए Enter दबाएं", btn: "Generate 🚀",
-                c1t: "📱 ऐप बिल्डर", c1d: "लाइव पूर्वावलोकन के साथ एंड्रॉइड और वेब ऐप्स",
-                c2t: "🌐 वेबसाइट डिज़ाइन", c2d: "रिस्पॉन्सिव लेआउट और कोड डाउनलोड",
-                c3t: "🎬 AI वीडियो निर्माण", c3d: "AI वीडियो अवधारणाएँ और दृश्य जनरेशन",
-                c4t: "📖 कहानी से 2 वीडियो", c4d: "कहानी को 2 वीडियो दृश्यों में विभाजित करें",
-                c5t: "⚡ रील्स और शॉर्ट्स बनाएं", c5d: "वायरल शॉर्ट-फॉर्म वीडियो स्क्रिप्ट",
-                c6t: "💡 बिजनेस प्लान", c6d: "स्टार्टअप रणनीतियाँ और वित्तीय योजना",
-                previewTitle: "🌐 Live Preview & Download", downloadText: "📥 Download",
-                modalHeading: "ईमेल ओटीपी लॉगिन", emailLabel: "अपना ईमेल पता दर्ज करें", otpLabel: "अपने ईमेल पर भेजा गया 6-अंकों का ओटीपी दर्ज करें"
-            }
-        };
-
-        function changeLanguage() {
-            const lang = document.getElementById('lang-select').value;
-            const t = translations[lang] || translations['en'];
-
-            document.getElementById('ui-title').innerText = t.title;
-            document.getElementById('ui-subtitle').innerText = t.subtitle;
-            document.getElementById('user-input').placeholder = t.placeholder;
-            document.getElementById('ui-hint').innerText = t.hint;
-            document.getElementById('ui-btn').innerText = t.btn;
-            
-            document.getElementById('card-1-title').innerText = t.c1t;
-            document.getElementById('card-1-desc').innerText = t.c1d;
-            document.getElementById('card-2-title').innerText = t.c2t;
-            document.getElementById('card-2-desc').innerText = t.c2d;
-            document.getElementById('card-3-title').innerText = t.c3t;
-            document.getElementById('card-3-desc').innerText = t.c3d;
-            document.getElementById('card-4-title').innerText = t.c4t;
-            document.getElementById('card-4-desc').innerText = t.c4d;
-            document.getElementById('card-5-title').innerText = t.c5t;
-            document.getElementById('card-5-desc').innerText = t.c5d;
-            document.getElementById('card-6-title').innerText = t.c6t;
-            document.getElementById('card-6-desc').innerText = t.c6d;
-            document.getElementById('preview-title').innerText = t.previewTitle;
-            document.getElementById('download-text').innerText = t.downloadText;
-            document.getElementById('modal-heading').innerText = t.modalHeading;
-            document.getElementById('email-label').innerText = t.emailLabel;
-            document.getElementById('otp-label').innerText = t.otpLabel;
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
         }
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        function sendOtpToEmail() {
+        async function sendOtpToEmail() {
             const email = document.getElementById('user-email').value;
             if(!email || !email.includes('@')) {
                 alert("Please enter a valid email address!");
                 return;
             }
-            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            alert("OTP sent successfully to " + email + "\n(For testing, your OTP is: " + generatedOtp + ")");
-            document.getElementById('email-group').style.display = 'none';
-            document.getElementById('otp-group').style.display = 'block';
+
+            const formData = new FormData();
+            formData.append("email", email);
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/send-otp`, { method: 'POST', body: formData });
+                const data = await res.json();
+                alert(data.message);
+                if(data.status === "success") {
+                    document.getElementById('email-group').style.display = 'none';
+                    document.getElementById('otp-group').style.display = 'block';
+                }
+            } catch(e) {
+                alert("Failed to send OTP. Check backend connection.");
+            }
         }
 
-        function verifyOtp() {
-            const enteredOtp = document.getElementById('user-otp').value;
-            if(enteredOtp === generatedOtp) {
-                alert("Login Successful! Welcome to Check It AI.");
-                closeModal('login-modal');
-                document.getElementById('email-group').style.display = 'block';
-                document.getElementById('otp-group').style.display = 'none';
-                document.getElementById('user-email').value = '';
-                document.getElementById('user-otp').value = '';
-            } else {
-                alert("Invalid OTP! Please try again.");
+        async function verifyOtp() {
+            const email = document.getElementById('user-email').value;
+            const otp = document.getElementById('user-otp').value;
+
+            const formData = new FormData();
+            formData.append("email", email);
+            formData.append("otp", otp);
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/verify-otp`, { method: 'POST', body: formData });
+                const data = await res.json();
+                alert(data.message);
+                if(data.status === "success") {
+                    closeModal('login-modal');
+                    document.getElementById('email-group').style.display = 'block';
+                    document.getElementById('otp-group').style.display = 'none';
+                }
+            } catch(e) {
+                alert("Verification failed.");
             }
         }
 
@@ -475,8 +311,11 @@
             const input = document.getElementById('user-input');
             const chatView = document.getElementById('chat-view');
             const homeView = document.getElementById('home-view');
+            const selectedModel = document.getElementById('ai-model').value;
             let text = input.value.trim();
             if(!text) return;
+
+            text += ` [Using AI Model: ${selectedModel}]`;
 
             homeView.style.display = 'none';
             chatView.classList.add('active');
@@ -485,7 +324,7 @@
             input.value = '';
             chatView.scrollTop = chatView.scrollHeight;
 
-            chatView.innerHTML += `<div class="msg ai" id="temp-load">⚡ Processing your request... Please wait</div>`;
+            chatView.innerHTML += `<div class="msg ai" id="temp-load">⚡ Generating with ${selectedModel}... Please wait</div>`;
             chatView.scrollTop = chatView.scrollHeight;
 
             try {
@@ -555,6 +394,10 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+
+        function changeLanguage() {
+            // భాష మార్పుల లాజిక్
         }
     </script>
 </body>
