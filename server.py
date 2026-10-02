@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # గిహబ్ నుండి రిక్వెస్ట్‌లను అనుమతించడానికి
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # ఇక్కడ మీ వివరాలను పైభాగంలోనే ఇవ్వాలి
 SMTP_SERVER = "smtp.gmail.com"
