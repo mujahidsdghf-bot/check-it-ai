@@ -5,15 +5,15 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # గిహబ్ నుండి వచ్చే రిక్వెస్ట్‌లను అనుమతించడానికి
+CORS(app)  # గిహబ్ నుండి రిక్వెస్ట్‌లను అనుమతించడానికి
 
-otp_storage = {}
-
-# మీ జిమెయిల్ వివరాలు (ఇక్కడ మీ మెయిల్ మరియు App Password ఇవ్వండి)
+# ఇక్కడ మీ వివరాలను పైభాగంలోనే ఇవ్వాలి
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "your-email@gmail.com"
-SENDER_PASSWORD = "your-app-password"
+SENDER_EMAIL = "gyhiffss1@gmail.com"  # మీ అసలు జీమెయిల్ ఇవ్వండి
+SENDER_PASSWORD = "tzsj nbts kvnu fsti"  # గూగుల్ 16 అంకెల యాప్ పాస్‌వర్డ్ ఇవ్వండి
+
+otp_storage = {}
 
 
 @app.route("/", methods=["GET"])
@@ -47,12 +47,12 @@ def send_otp():
 
     return jsonify({"status": "success", "message": "OTP sent to your email successfully!"})
   except Exception as e:
-    # SMTP సెటప్ చేయనప్పటికీ టెస్టింగ్ కోసం ఓటీపీని రిటర్న్ చేయడానికి
+    # ఒకవేళ పాస్‌‌వర్డ్ తప్పుగా ఉంటే లేదా కనెక్షన్ ఎర్రర్ వస్తే టెస్టింగ్ కోసం
     return jsonify({
         "status": "success",
         "message": (
-            f"OTP generated (SMTP simulated): {otp}. (Configure SMTP in"
-            " server.py for real mail)"
+            f"OTP generated (SMTP simulated): {otp}. (Check your Gmail App"
+            " Password)"
         ),
     })
 
@@ -70,7 +70,6 @@ def verify_otp():
 @app.route("/api/chat", methods=["POST"])
 def chat():
   prompt = request.form.get("prompt")
-  # ఏఐ రెస్పాన్స్ జనరేషన్ లాజిక్
   return jsonify({
       "status": "success",
       "response": (
@@ -85,7 +84,3 @@ def chat():
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=5000)
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-SENDER_EMAIL = "gyhiffss1@gmail.com"  # మీ అసలు జీమెయిల్ అడ్రస్ ఇక్కడ ఇవ్వండి
-SENDER_PASSWORD = "tzsj nbts kvnu fsti"  # గూగుల్ నుండి
