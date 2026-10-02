@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check It AI - Live App & Web Builder</title>
+    <title>Check It AI - Bolt.new Style Platform</title>
     <style>
         :root {
-            --bg-color: #212121;
-            --text-color: #ececec;
-            --accent-color: #2f2f2f;
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --text-color: #e0e0e0;
             --border-color: #333;
+            --accent-color: #3b82f6;
         }
         body {
             margin: 0;
@@ -23,45 +24,28 @@
         }
         .header {
             padding: 12px 20px;
+            background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #171717;
         }
-        .title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        .view-tabs {
-            display: flex;
-            gap: 10px;
-        }
-        .tab-btn {
-            background: #2f2f2f;
-            border: none;
-            color: var(--text-color);
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .tab-btn.active {
-            background-color: #ececec;
-            color: #212121;
+        .logo {
             font-weight: bold;
+            font-size: 1.1rem;
+            color: #fff;
         }
-        .main-content {
-            flex: 1;
+        .workspace {
             display: flex;
-            position: relative;
+            flex: 1;
             overflow: hidden;
         }
-        .chat-section {
-            flex: 1;
+        .chat-pane {
+            width: 45%;
             display: flex;
             flex-direction: column;
-            height: 100%;
+            border-right: 1px solid var(--border-color);
+            background-color: var(--bg-color);
             position: relative;
         }
         .chat-messages {
@@ -70,244 +54,153 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            padding-bottom: 100px;
-        }
-        .message-wrapper {
-            display: flex;
             gap: 15px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
+            padding-bottom: 90px;
         }
-        .message-wrapper.user {
-            justify-content: flex-end;
-        }
-        .message {
-            padding: 12px 16px;
-            border-radius: 12px;
-            line-height: 1.6;
-            font-size: 0.95rem;
+        .msg {
+            padding: 10px 14px;
+            border-radius: 8px;
+            max-width: 85%;
+            line-height: 1.5;
+            font-size: 0.9rem;
             white-space: pre-wrap;
         }
-        .user .message {
-            background-color: #2f2f2f;
-            color: white;
-            border-top-right-radius: 2px;
+        .msg.user {
+            background-color: #2b2b2b;
+            color: #fff;
+            align-self: flex-end;
         }
-        .ai .message {
+        .msg.ai {
             background-color: transparent;
             color: var(--text-color);
-            border: none;
-            padding-left: 0;
+            align-self: flex-start;
         }
-        .preview-section {
-            display: none;
-            flex: 1;
-            background: #fff;
-            border-left: 1px solid var(--border-color);
-            height: 100%;
-        }
-        .preview-section.active-preview {
-            display: block;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .input-container {
+        .input-area {
             position: absolute;
             bottom: 0;
-            left: 0;
             width: 100%;
-            background: linear-gradient(transparent, var(--bg-color) 50%);
-            padding: 20px;
+            padding: 15px;
+            background: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            box-sizing: border-box;
             display: flex;
-            justify-content: center;
+            gap: 10px;
         }
-        .input-box {
-            width: 100%;
-            max-width: 800px;
-            background-color: #171717;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            padding: 8px 15px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-        }
-        .input-box textarea {
+        .input-area textarea {
             flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-color);
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
             resize: none;
-            height: 24px;
-            max-height: 150px;
-            font-family: inherit;
-            font-size: 0.95rem;
+            height: 22px;
             outline: none;
+            font-family: inherit;
         }
-        .send-btn {
-            background-color: #ececec;
-            color: #212121;
+        .input-area button {
+            background-color: var(--accent-color);
+            color: white;
             border: none;
-            width: 32px;
-            height: 32px;
+            padding: 0 16px;
             border-radius: 6px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-weight: bold;
+        }
+        .preview-pane {
+            width: 55%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+        .preview-header {
+            background: #f1f5f9;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            color: #475569;
+            border-bottom: 1px solid #cbd5e1;
+            font-weight: 600;
+        }
+        iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="title">Check It AI ⚡ Builder & Preview</div>
-        <div class="view-tabs">
-            <button class="tab-btn active" id="chat-tab-btn" onclick="switchView('chat')">💬 Chat & Code</button>
-            <button class="tab-btn" id="preview-tab-btn" onclick="switchView('preview')">👁️ Live Preview</button>
-        </div>
+        <div class="logo">⚡ Check It AI (Bolt.new Engine)</div>
     </div>
 
-    <div class="main-content">
-        <!-- Chat Section -->
-        <div class="chat-section" id="chat-pane">
+    <div class="workspace">
+        <!-- Chat Panel -->
+        <div class="chat-pane">
             <div class="chat-messages" id="chat-messages">
-                <div class="message-wrapper ai">
-                    <div class="message">Hello! I am 'Check It AI'. Ask me to build any website or app (e.g., "Create an E-commerce product card or landing page"). I will write the code and you can see it live instantly in the Live Preview tab!</div>
-                </div>
+                <div class="msg ai">Hello! Tell me what kind of app or website you want to build. I will generate and run it live on your screen instantly!</div>
             </div>
-
-            <div class="input-container">
-                <div class="input-box">
-                    <textarea id="user-input" placeholder="Ask for an app, website or code in any language..." rows="1" oninput="autoGrow(this)"></textarea>
-                    <button class="send-btn" onclick="sendMessage()">⬆</button>
-                </div>
+            <div class="input-area">
+                <textarea id="user-input" placeholder="Describe your app (e.g., E-commerce store, Todo app)..." rows="1"></textarea>
+                <button onclick="sendPrompt()">Build</button>
             </div>
         </div>
 
-        <!-- Live Preview Section -->
-        <div class="preview-section" id="preview-pane">
-            <iframe id="preview-frame"></iframe>
+        <!-- Live Preview Panel -->
+        <div class="preview-pane">
+            <div class="preview-header">🌐 Live App Preview</div>
+            <iframe id="live-preview"></iframe>
         </div>
     </div>
 
     <script>
         const BACKEND_URL = "https://check-it-ai.onrender.com";
-        let lastGeneratedCode = "";
 
-        function switchView(view) {
-            const chatPane = document.getElementById('chat-pane');
-            const previewPane = document.getElementById('preview-pane');
-            const chatBtn = document.getElementById('chat-tab-btn');
-            const previewBtn = document.getElementById('preview-tab-btn');
-
-            if (view === 'chat') {
-                chatPane.style.display = 'flex';
-                previewPane.classList.remove('active-preview');
-                chatBtn.classList.add('active');
-                previewBtn.classList.remove('active');
-            } else {
-                chatPane.style.display = 'none';
-                previewPane.classList.add('active-preview');
-                previewBtn.classList.add('active');
-                chatBtn.classList.remove('active');
-                
-                if (lastGeneratedCode) {
-                    updatePreview(lastGeneratedCode);
-                } else {
-                    document.getElementById('preview-frame').srcdoc = "<h3>No code generated yet. Ask AI to build a webpage first!</h3>";
-                }
-            }
-        }
-
-        function updatePreview(code) {
-            const frame = document.getElementById('preview-frame');
-            // Extract HTML code if wrapped in markdown code blocks
-            let cleanCode = code;
-            const match = code.match(/```(?:html)?([\s\S]*?)```/);
-            if (match && match[1]) {
-                cleanCode = match[1];
-            }
-            frame.srcdoc = cleanCode;
-        }
-
-        function autoGrow(element) {
-            element.style.height = '24px';
-            element.style.height = (element.scrollHeight) + 'px';
-        }
-
-        async function sendMessage() {
-            const inputField = document.getElementById('user-input');
-            const messageBox = document.getElementById('chat-messages');
-            const text = inputField.value.trim();
+        async function sendPrompt() {
+            const input = document.getElementById('user-input');
+            const messages = document.getElementById('chat-messages');
+            const text = input.value.trim();
             if(!text) return;
 
-            messageBox.innerHTML += `
-                <div class="message-wrapper user">
-                    <div class="message">${text}</div>
-                </div>`;
-            inputField.value = '';
-            inputField.style.height = '24px';
-            messageBox.scrollTop = messageBox.scrollHeight;
+            messages.innerHTML += `<div class="msg user">${text}</div>`;
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
 
-            const loadingId = 'loading-' + Date.now();
-            messageBox.innerHTML += `
-                <div class="message-wrapper ai" id="${loadingId}">
-                    <div class="message">Building your app/code...</div>
-                </div>`;
-            messageBox.scrollTop = messageBox.scrollHeight;
+            messages.innerHTML += `<div class="msg ai" id="temp-load">Building application...</div>`;
+            messages.scrollTop = messages.scrollHeight;
 
             try {
                 const formData = new FormData();
                 formData.append("prompt", text);
                 formData.append("mode", "App & Web Builder");
 
-                const response = await fetch(`${BACKEND_URL}/api/chat`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
+                const res = await fetch(`${BACKEND_URL}/api/chat`, { method: 'POST', body: formData });
+                const data = await res.json();
 
-                document.getElementById(loadingId).remove();
+                document.getElementById('temp-load').remove();
+
                 if(data.status === "success") {
-                    lastGeneratedCode = data.response;
-                    messageBox.innerHTML += `
-                        <div class="message-wrapper ai">
-                            <div class="message">${data.response}</div>
-                        </div>`;
-                    
-                    // Automatically update preview if it contains HTML
-                    if (data.response.includes("<html") || data.response.includes("<!DOCTYPE") || data.response.includes("<div")) {
-                        updatePreview(data.response);
-                    }
+                    messages.innerHTML += `<div class="msg ai">App built successfully! Check the live preview.</div>`;
+                    renderPreview(data.response);
                 } else {
-                    messageBox.innerHTML += `
-                        <div class="message-wrapper ai">
-                            <div class="message">Error: ${data.error_details}</div>
-                        </div>`;
+                    messages.innerHTML += `<div class="msg ai">Error: ${data.error_details}</div>`;
                 }
-            } catch (err) {
-                document.getElementById(loadingId).remove();
-                messageBox.innerHTML += `
-                    <div class="message-wrapper ai">
-                        <div class="message">Server connection failed.</div>
-                    </div>`;
+            } catch(e) {
+                document.getElementById('temp-load').remove();
+                messages.innerHTML += `<div class="msg ai">Connection failed.</div>`;
             }
-            messageBox.scrollTop = messageBox.scrollHeight;
+            messages.scrollTop = messages.scrollHeight;
         }
 
-        document.getElementById('user-input').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+        function renderPreview(code) {
+            const iframe = document.getElementById('live-preview');
+            let htmlCode = code;
+            const match = code.match(/```(?:html)?([\s\S]*?)```/);
+            if (match && match[1]) {
+                htmlCode = match[1];
             }
-        });
+            iframe.srcdoc = htmlCode;
+        }
     </script>
 </body>
 </html>
