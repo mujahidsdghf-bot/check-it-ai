@@ -1,10 +1,4 @@
-fastapi
-uvicorn
-google-generativeai
-boto3
-pydantic
-python-multipart
-requests
 flask
 flask-cors
 gunicorn
+requests
