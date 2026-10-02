@@ -268,32 +268,6 @@
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         async function sendOtpToEmail() {
-    const email = document.getElementById('user-email').value;
-    if(!email || !email.includes('@')) { alert("Please enter a valid email address!"); return; }
-
-    try {
-        const res = await fetch(`${BACKEND_URL}/api/send-otp`, { 
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email: email })
-        });
-        const data = await res.json();
-        alert(data.message);
-        if(data.status === "success") {
-            document.getElementById('email-group').style.display = 'none';
-            document.getElementById('otp-group').style.display = 'block';
-        }
-    } catch(e) {
-        alert("Connection error: " + e.message);
-    }
-}
-
-
-
-
-        async function sendOtpToEmail() {
     const emailInput = document.getElementById('user-email');
     const email = emailInput ? emailInput.value : '';
 
@@ -322,6 +296,7 @@
         alert("Connection error: " + e.message);
     }
 }
+
 
 
         function handleKeyPress(e) {
