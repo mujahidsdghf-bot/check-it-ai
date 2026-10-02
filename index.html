@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check It AI - Bolt.new Style Platform</title>
+    <title>Check It AI - Advanced Platform</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --panel-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --border-color: #333;
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-color: #f8fafc;
+            --border-color: #334155;
             --accent-color: #3b82f6;
         }
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,123 +24,122 @@
             overflow: hidden;
         }
         .header {
-            padding: 10px 15px;
+            padding: 15px 25px;
             background-color: var(--panel-bg);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 10;
         }
         .logo {
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.2rem;
             color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .mobile-tabs {
-            display: none;
-            gap: 5px;
-        }
-        .mobile-tab-btn {
-            background: #333;
-            color: #fff;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        .mobile-tab-btn.active {
-            background: var(--accent-color);
-        }
-        .workspace {
+        .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
-            position: relative;
             width: 100%;
         }
-        .chat-pane {
-            width: 50%;
+        .chat-area {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid var(--border-color);
-            background-color: var(--bg-color);
             position: relative;
+            background: var(--bg-color);
             height: 100%;
         }
         .chat-messages {
             flex: 1;
-            padding: 15px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            padding-bottom: 90px; /* కింద బాక్స్ కింద అతుక్కోకుండా స్పేస్ */
+            gap: 15px;
+            padding-bottom: 120px;
         }
         .msg {
-            padding: 10px 14px;
-            border-radius: 8px;
-            max-width: 85%;
-            line-height: 1.5;
-            font-size: 0.9rem;
+            padding: 12px 16px;
+            border-radius: 10px;
+            max-width: 80%;
+            line-height: 1.6;
+            font-size: 0.95rem;
             white-space: pre-wrap;
         }
         .msg.user {
-            background-color: #2b2b2b;
+            background-color: #2563eb;
             color: #fff;
             align-self: flex-end;
         }
         .msg.ai {
-            background-color: transparent;
+            background-color: var(--panel-bg);
             color: var(--text-color);
             align-self: flex-start;
-        }
-        .input-area {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 12px 15px;
-            background: var(--panel-bg);
-            border-top: 1px solid var(--border-color);
-            box-sizing: border-box;
-            display: flex;
-            gap: 8px;
-            z-index: 5;
-        }
-        .input-area textarea {
-            flex: 1;
-            background: #121212;
             border: 1px solid var(--border-color);
+        }
+        /* స్క్రీన్ మధ్యలో మరియు కింద అద్భుతంగా ఉండే సెర్చ్/చాట్ బార్ */
+        .search-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 10px 15px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            align-items: center;
+        }
+        .search-container textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
             color: #fff;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 8px;
             resize: none;
             height: 24px;
+            max-height: 120px;
             outline: none;
             font-family: inherit;
+            font-size: 1rem;
         }
-        .input-area button {
+        .search-container button {
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 0 16px;
-            border-radius: 6px;
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
+            transition: background 0.2s;
         }
+        .search-container button:hover {
+            background-color: #2563eb;
+        }
+        /* ప్రివ్యూ ప్యానెల్ (యాప్/వెబ్‌సైట్ లైవ్‌లో కనిపించడానికి) */
         .preview-pane {
             width: 50%;
             background: #ffffff;
-            display: flex;
+            display: none; /* యాప్ అడిగినప్పుడు ఆటోమేటిక్‌గా ఓపెన్ అవుతుంది */
             flex-direction: column;
+            border-left: 1px solid var(--border-color);
             height: 100%;
+        }
+        .preview-pane.active {
+            display: flex;
         }
         .preview-header {
             background: #f1f5f9;
-            padding: 8px 15px;
-            font-size: 0.8rem;
+            padding: 10px 15px;
+            font-size: 0.85rem;
             color: #475569;
             border-bottom: 1px solid #cbd5e1;
             font-weight: 600;
@@ -151,9 +151,9 @@
             background-color: #10b981;
             color: white;
             border: none;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             cursor: pointer;
             font-weight: bold;
         }
@@ -163,18 +163,21 @@
             border: none;
         }
 
-        /* మొబైల్ క్లాసులు */
-        .mobile-only-hide {
-            display: none !important;
-        }
-        .mobile-only-show {
-            display: flex !important;
-            width: 100% !important;
-        }
-
         @media screen and (max-width: 900px) {
-            .mobile-tabs {
-                display: flex !important;
+            .preview-pane {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 100;
+            }
+            .close-preview {
+                background: #ef4444;
+                color: white;
+                border: none;
+                padding: 4px 8px;
+                border-radius: 4px;
+                cursor: pointer;
             }
         }
     </style>
@@ -182,30 +185,31 @@
 <body>
 
     <div class="header">
-        <div class="logo">⚡ Check It AI</div>
-        <div class="mobile-tabs" id="mobile-tabs-container" style="display: none;">
-            <button class="mobile-tab-btn active" id="btn-chat" onclick="switchTab('chat')">💬 Chat & Ask</button>
-            <button class="mobile-tab-btn" id="btn-preview" onclick="switchTab('preview')">🌐 Live Preview</button>
-        </div>
+        <div class="logo">⚡ Check It AI - Advanced Engine</div>
     </div>
 
-    <div class="workspace" id="workspace">
-        <!-- Chat Panel -->
-        <div class="chat-pane" id="chat-pane">
+    <div class="main-container">
+        <!-- Chat & Search Area -->
+        <div class="chat-area">
             <div class="chat-messages" id="chat-messages">
-                <div class="msg ai">Hello! Ask me to build any app or website here. You can type your request below!</div>
+                <div class="msg ai">నమస్కారం! మీకు ఏ యాప్, వెబ్‌సైట్, లేదా సమాచారం కావాలన్నా ఇక్కడ అడగండి. (උదాహరణకు: "నాకు ఒక ఫుడ్ డెలివరీ యాప్ కావాలి" లేదా "ఒక మంచి కథ చెప్పు").</div>
             </div>
-            <div class="input-area">
-                <textarea id="user-input" placeholder="Type here: e.g., Build a food delivery app..." rows="1"></textarea>
-                <button onclick="sendPrompt()">Send</button>
+
+            <!-- సెర్చ్ బార్ -->
+            <div class="search-container">
+                <textarea id="user-input" placeholder="మీకేం కావాలి? ఇక్కడ టైప్ చేయండి..." rows="1" onkeydown="handleKeyPress(event)"></textarea>
+                <button onclick="sendPrompt()">Build / Ask</button>
             </div>
         </div>
 
         <!-- Live Preview Panel -->
         <div class="preview-pane" id="preview-pane">
             <div class="preview-header">
-                <span>🌐 Live App Preview</span>
-                <button class="download-btn" onclick="downloadCode()">📥 Download Code</button>
+                <span>🌐 Live App / Website Preview</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="download-btn" onclick="downloadCode()">📥 Download</button>
+                    <button class="close-preview" onclick="togglePreview(false)" style="display:none;" id="close-btn">❌ Close</button>
+                </div>
             </div>
             <iframe id="live-preview"></iframe>
         </div>
@@ -214,52 +218,11 @@
     <script>
         const BACKEND_URL = "https://check-it-ai.onrender.com";
         let lastGeneratedCode = "";
-        let isMobile = false;
 
-        function checkScreenSize() {
-            if (window.innerWidth <= 900) {
-                isMobile = true;
-                document.getElementById('mobile-tabs-container').style.display = 'flex';
-                switchTab('chat');
-            } else {
-                isMobile = false;
-                document.getElementById('mobile-tabs-container').style.display = 'none';
-                document.getElementById('chat-pane').classList.remove('mobile-only-hide', 'mobile-only-show');
-                document.getElementById('preview-pane').classList.remove('mobile-only-hide', 'mobile-only-show');
-                document.getElementById('chat-pane').style.width = '50%';
-                document.getElementById('preview-pane').style.width = '50%';
-                document.getElementById('chat-pane').style.display = 'flex';
-                document.getElementById('preview-pane').style.display = 'flex';
-            }
-        }
-
-        window.onload = checkScreenSize;
-        window.onresize = checkScreenSize;
-
-        function switchTab(tabName) {
-            const chatPane = document.getElementById('chat-pane');
-            const previewPane = document.getElementById('preview-pane');
-            const btnChat = document.getElementById('btn-chat');
-            const btnPreview = document.getElementById('btn-preview');
-
-            if (!isMobile) return;
-
-            if (tabName === 'chat') {
-                chatPane.classList.add('mobile-only-show');
-                chatPane.classList.remove('mobile-only-hide');
-                previewPane.classList.add('mobile-only-hide');
-                previewPane.classList.remove('mobile-only-show');
-                
-                btnChat.classList.add('active');
-                btnPreview.classList.remove('active');
-            } else {
-                previewPane.classList.add('mobile-only-show');
-                previewPane.classList.remove('mobile-only-hide');
-                chatPane.classList.add('mobile-only-hide');
-                chatPane.classList.remove('mobile-only-show');
-                
-                btnPreview.classList.add('active');
-                btnChat.classList.remove('active');
+        function handleKeyPress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPrompt();
             }
         }
 
@@ -273,7 +236,7 @@
             input.value = '';
             messages.scrollTop = messages.scrollHeight;
 
-            messages.innerHTML += `<div class="msg ai" id="temp-load">Building your app/website...</div>`;
+            messages.innerHTML += `<div class="msg ai" id="temp-load">ప్రసెస్ చేయబడుతోంది... (Processing...)</div>`;
             messages.scrollTop = messages.scrollHeight;
 
             try {
@@ -290,19 +253,17 @@
                     lastGeneratedCode = data.response;
                     messages.innerHTML += `<div class="msg ai">${data.response}</div>`;
                     
+                    // ఒకవేళ యాప్ లేదా వెబ్‌సైట్ కోడ్ వస్తే ఆటోమేటిక్‌గా లైవ్ ప్రివ్యూ చూపించు
                     if (data.response.includes("<html") || data.response.includes("<!DOCTYPE") || data.response.includes("<div")) {
                         renderPreview(data.response);
-                        if (isMobile) {
-                            // ఆటోమేటిక్‌గా ప్రివ్యూ చూడటానికి ప్రివ్యూ ట్యాబ్‌కి మారుతుంది (మీకు నచ్చితే దీన్ని ఉంచుకోవచ్చు)
-                            // switchTab('preview'); 
-                        }
+                        togglePreview(true);
                     }
                 } else {
-                    messages.innerHTML += `<div class="msg ai">Error: ${data.error_details}</div>`;
+                    messages.innerHTML += `<div class="msg ai">సమస్య ఏర్పడింది: ${data.error_details}</div>`;
                 }
             } catch(e) {
                 document.getElementById('temp-load').remove();
-                messages.innerHTML += `<div class="msg ai">Connection failed.</div>`;
+                messages.innerHTML += `<div class="msg ai">కనెక్షన్ విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి.</div>`;
             }
             messages.scrollTop = messages.scrollHeight;
         }
@@ -317,9 +278,21 @@
             iframe.srcdoc = htmlCode;
         }
 
+        function togglePreview(show) {
+            const pane = document.getElementById('preview-pane');
+            if (show) {
+                pane.classList.add('active');
+                if (window.innerWidth <= 900) {
+                    document.getElementById('close-btn').style.display = 'inline-block';
+                }
+            } else {
+                pane.classList.remove('active');
+            }
+        }
+
         function downloadCode() {
             if (!lastGeneratedCode) {
-                alert("No code generated yet to download!");
+                alert("డౌన్‌లోడ్ చేయడానికి ఎలాంటి కోడ్ లేదు!");
                 return;
             }
             let htmlCode = lastGeneratedCode;
