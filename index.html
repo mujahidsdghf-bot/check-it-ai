@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check It AI - World-Class Multi-Language Super Platform</title>
+    <title>Check It AI - Smart Multi-Language Platform</title>
     <style>
         :root {
             --bg-color: #212121;
-            --sidebar-bg: #171717;
             --text-color: #ececec;
             --accent-color: #2f2f2f;
             --border-color: #2f2f2f;
@@ -18,74 +17,17 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
+            flex-direction: column;
             height: 100vh;
             overflow: hidden;
-        }
-        .sidebar {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-        }
-        .new-chat-btn {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 10px;
-            text-align: left;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .new-chat-btn:hover {
-            background-color: var(--accent-color);
-        }
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-        }
-        .menu-title {
-            font-size: 0.8rem;
-            color: #888;
-            margin: 10px 0 5px 10px;
-        }
-        .menu-item {
-            background: transparent;
-            border: none;
-            color: var(--text-color);
-            padding: 10px;
-            width: 100%;
-            text-align: left;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-bottom: 4px;
-        }
-        .menu-item:hover, .menu-item.active {
-            background-color: var(--accent-color);
-        }
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            position: relative;
         }
         .chat-header {
             padding: 15px 20px;
             border-bottom: 1px solid var(--border-color);
             background-color: var(--bg-color);
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
         }
         .chat-messages {
             flex: 1;
@@ -137,7 +79,7 @@
         .input-box {
             width: 100%;
             max-width: 800px;
-            background-color: var(--sidebar-bg);
+            background-color: #171717;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             display: flex;
@@ -177,51 +119,25 @@
 </head>
 <body>
 
-    <div class="sidebar">
-        <button class="new-chat-btn" onclick="location.reload()">➕ New Chat</button>
-        <div class="sidebar-menu">
-            <div class="menu-title">Features & Modes</div>
-            <button class="menu-item active" onclick="setMode('General', event)">💬 General Chat</button>
-            <button class="menu-item" onclick="setMode('Story to Movie', event)">🎬 Story to Movie</button>
-            <button class="menu-item" onclick="setMode('App & Website Builder', event)">💻 App & Web Builder</button>
-            <button class="menu-item" onclick="setMode('Python Mentor', event)">🐍 Python Mentor</button>
-            <button class="menu-item" onclick="setMode('Design & Ads', event)">🎨 Design & Ads</button>
-            <button class="menu-item" onclick="setMode('Video Creator', event)">🎥 Video Scripts</button>
-            <button class="menu-item" onclick="setMode('Business & Food Tricks', event)">📈 Business & Food</button>
-            <button class="menu-item" onclick="setMode('Repair Tech', event)">🔧 Repair & Robotics</button>
+    <div class="chat-header">
+        Check It AI ⚡ (Auto-Detects Coding, Stories, Repairs & Any Language)
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+        <div class="message-wrapper ai">
+            <div class="message">Hello! I am 'Check It AI'. Type anything you want—whether it's coding, a story for a movie, a technical repair, or a general question in any language, and I will instantly understand and assist you!</div>
         </div>
     </div>
 
-    <div class="main-container">
-        <div class="chat-header">
-            <span id="current-mode-title">Check It AI - General Chat</span>
-            <span>⚡ v1.0</span>
-        </div>
-
-        <div class="chat-messages" id="chat-messages">
-            <div class="message-wrapper ai">
-                <div class="message">Hello! I am 'Check It AI'. How can I help you today? (You can ask in any language, and I will reply in the exact same language).</div>
-            </div>
-        </div>
-
-        <div class="input-container">
-            <div class="input-box">
-                <textarea id="user-input" placeholder="Type your message here (in any language)..." rows="1" oninput="autoGrow(this)"></textarea>
-                <button class="send-btn" onclick="sendMessage()">⬆</button>
-            </div>
+    <div class="input-container">
+        <div class="input-box">
+            <textarea id="user-input" placeholder="Type your message here (Ask in any language)..." rows="1" oninput="autoGrow(this)"></textarea>
+            <button class="send-btn" onclick="sendMessage()">⬆</button>
         </div>
     </div>
 
     <script>
-        let currentMode = "General";
         const BACKEND_URL = "https://check-it-ai.onrender.com";
-
-        function setMode(mode, event) {
-            currentMode = mode;
-            document.getElementById('current-mode-title').innerText = "Check It AI - " + mode;
-            document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
 
         function autoGrow(element) {
             element.style.height = '24px';
@@ -252,7 +168,7 @@
             try {
                 const formData = new FormData();
                 formData.append("prompt", text);
-                formData.append("mode", currentMode);
+                formData.append("mode", "Auto-Detect");
 
                 const response = await fetch(`${BACKEND_URL}/api/chat`, {
                     method: 'POST',
