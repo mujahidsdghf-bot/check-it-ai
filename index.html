@@ -43,7 +43,7 @@
             background: #333;
             color: #fff;
             border: none;
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 4px;
             font-size: 0.8rem;
             cursor: pointer;
@@ -56,6 +56,7 @@
             flex: 1;
             overflow: hidden;
             position: relative;
+            width: 100%;
         }
         .chat-pane {
             width: 45%;
@@ -158,23 +159,25 @@
             width: 100%;
             border: none;
         }
-        @media (max-width: 768px) {
+
+        /* మొబైల్ స్క్రీన్ లేదా చిన్న స్క్రీన్ల కోసం ఖచ్చితమైన సెటప్ */
+        @media screen and (max-width: 900px) {
             .mobile-tabs {
-                display: flex;
+                display: flex !important;
             }
             .chat-pane {
-                width: 100%;
+                width: 100% !important;
                 display: flex;
             }
             .preview-pane {
-                width: 100%;
+                width: 100% !important;
                 display: none;
             }
-            .chat-pane.hidden-mobile {
-                display: none;
+            .chat-pane.mobile-hidden {
+                display: none !important;
             }
-            .preview-pane.active-mobile {
-                display: flex;
+            .preview-pane.mobile-visible {
+                display: flex !important;
             }
         }
     </style>
@@ -183,9 +186,9 @@
 
     <div class="header">
         <div class="logo">⚡ Check It AI</div>
-        <div class="mobile-tabs">
-            <button class="mobile-tab-btn active" id="btn-chat" onclick="switchMobileView('chat')">Chat & Doubts</button>
-            <button class="mobile-tab-btn" id="btn-preview" onclick="switchMobileView('preview')">Live Preview</button>
+        <div class="mobile-tabs" id="mobile-tabs-container">
+            <button class="mobile-tab-btn active" id="btn-chat" onclick="switchTab('chat')">💬 Chat & Doubts</button>
+            <button class="mobile-tab-btn" id="btn-preview" onclick="switchTab('preview')">🌐 Live Preview</button>
         </div>
     </div>
 
@@ -215,20 +218,20 @@
         const BACKEND_URL = "https://check-it-ai.onrender.com";
         let lastGeneratedCode = "";
 
-        function switchMobileView(view) {
+        function switchTab(tabName) {
             const chatPane = document.getElementById('chat-pane');
             const previewPane = document.getElementById('preview-pane');
             const btnChat = document.getElementById('btn-chat');
             const btnPreview = document.getElementById('btn-preview');
 
-            if (view === 'chat') {
-                chatPane.classList.remove('hidden-mobile');
-                previewPane.classList.remove('active-mobile');
+            if (tabName === 'chat') {
+                chatPane.classList.remove('mobile-hidden');
+                previewPane.classList.remove('mobile-visible');
                 btnChat.classList.add('active');
                 btnPreview.classList.remove('active');
             } else {
-                chatPane.classList.add('hidden-mobile');
-                previewPane.classList.add('active-mobile');
+                chatPane.classList.add('mobile-hidden');
+                previewPane.classList.add('mobile-visible');
                 btnPreview.classList.add('active');
                 btnChat.classList.remove('active');
             }
@@ -263,8 +266,9 @@
                     
                     if (data.response.includes("<html") || data.response.includes("<!DOCTYPE") || data.response.includes("<div")) {
                         renderPreview(data.response);
-                        if (window.innerWidth <= 768) {
-                            switchMobileView('preview');
+                        // మొబైల్‌లో యాప్ రెడీ కాగానే ఆటోమేటిక్‌గా ప్రివ్యూ ట్యాబ్‌కి మారుతుంది
+                        if (window.innerWidth <= 900) {
+                            switchTab('preview');
                         }
                     }
                 } else {
