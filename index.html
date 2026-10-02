@@ -293,27 +293,36 @@
 
 
 
-        async function verifyOtp() {
-            const email = document.getElementById('user-email').value;
-            const otp = document.getElementById('user-otp').value;
+        async function sendOtpToEmail() {
+    const emailInput = document.getElementById('user-email');
+    const email = emailInput ? emailInput.value : '';
 
-            const formData = new FormData();
-            formData.append("email", email);
-            formData.append("otp", otp);
+    if (!email || !email.includes('@')) {
+        alert("Please enter a valid email address!");
+        return;
+    }
 
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/verify-otp`, { method: 'POST', body: formData });
-                const data = await res.json();
-                alert(data.message);
-                if(data.status === "success") {
-                    closeModal('login-modal');
-                    document.getElementById('email-group').style.display = 'block';
-                    document.getElementById('otp-group').style.display = 'none';
-                }
-            } catch(e) {
-                alert("Verification failed.");
-            }
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email })
+        });
+        
+        const data = await res.json();
+        alert(data.message);
+        
+        if (data.status === "success") {
+            document.getElementById('email-group').style.display = 'none';
+            document.getElementById('otp-group').style.display = 'block';
         }
+    } catch (e) {
+        alert("Connection error: " + e.message);
+    }
+}
+
 
         function handleKeyPress(e) {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendPrompt(); }
