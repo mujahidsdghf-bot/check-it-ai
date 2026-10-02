@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check It AI - ChatGPT Style</title>
+    <style>
+        :root {
+            --bg-color: #212121;
+            --sidebar-bg: #171717;
+            --text-color: #ececec;
+            --accent-color: #2f2f2f;
+            --hover-color: #212121;
+            --border-color: #2f2f2f;
+            --btn-color: #19c37d;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .new-chat-btn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .new-chat-btn:hover {
+            background-color: var(--accent-color);
+        }
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .menu-title {
+            font-size: 0.8rem;
+            color: #888;
+            margin: 10px 0 5px 10px;
+        }
+        .menu-item {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--accent-color);
+        }
+        /* Main Chat Area */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 100px;
+        }
+        .message-wrapper {
+            display: flex;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .message-wrapper.user {
+            justify-content: flex-end;
+        }
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+        .user .message {
+            background-color: #2f2f2f;
+            color: white;
+            border-top-right-radius: 2px;
+        }
+        .ai .message {
+            background-color: transparent;
+            color: var(--text-color);
+            border: none;
+            padding-left: 0;
+        }
+        /* Input Area */
+        .input-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, var(--bg-color) 50%);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .input-box {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        .input-box textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            resize: none;
+            height: 24px;
+            max-height: 150px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .send-btn {
+            background-color: #ececec;
+            color: #212121;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .send-btn:hover {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <button class="new-chat-btn" onclick="location.reload()">➕ కొత్త చాట్ (New Chat)</button>
+        <div class="sidebar-menu">
+            <div class="menu-title">ఫీచర్లు & మోడ్‌లు</div>
+            <button class="menu-item active" onclick="setMode('General', event)">💬 జనరల్ చాట్</button>
+            <button class="menu-item" onclick="setMode('Story to Movie', event)">🎬 స్టోరీ టూ మూవీ</button>
+            <button class="menu-item" onclick="setMode('App & Website Builder', event)">💻 యాప్ / వెబ్ బిల్డర్</button>
+            <button class="menu-item" onclick="setMode('Python Mentor', event)">🐍 పైథాన్ మెంటార్</button>
+            <button class="menu-item" onclick="setMode('Design & Ads', event)">🎨 డిజైన్ & యాడ్స్</button>
+            <button class="menu-item" onclick="setMode('Video Creator', event)">🎥 వీడియో స్క్రిప్ట్స్</button>
+            <button class="menu-item" onclick="setMode('Business & Food Tricks', event)">📈 బిజినెస్ & ఫుడ్</button>
+            <button class="menu-item" onclick="setMode('Repair Tech', event)">🔧 రిపేర్ & రోబోటిక్స్</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="chat-header">
+            <span id="current-mode-title">Check It AI - General Chat</span>
+            <span>⚡ v1.0</span>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message-wrapper ai">
+                <div class="message">నమస్తే! నేను 'Check It AI' అసిస్టెంట్‌ని. మీకు ఏ సహాయం కావాలి? (ఏ భాషలోనైనా అడగవచ్చు).</div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="input-box">
+                <textarea id="user-input" placeholder="మీ సందేశాన్ని ఇక్కడ టైప్ చేయండి..." rows="1" oninput="autoGrow(this)"></textarea>
+                <button class="send-btn" onclick="sendMessage()">⬆</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = "General";
+        const BACKEND_URL = "https://check-it-ai.onrender.com"; // మీ రెండర్ లింక్
+
+        function setMode(mode, event) {
+            currentMode = mode;
+            document.getElementById('current-mode-title').innerText = "Check It AI - " + mode;
+            document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function autoGrow(element) {
+            element.style.height = '24px';
+            element.style.height = (element.scrollHeight) + 'px';
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const messageBox = document.getElementById('chat-messages');
+            const text = inputField.value.trim();
+            if(!text) return;
+
+            // యూజర్ మెసేజ్
+            messageBox.innerHTML += `
+                <div class="message-wrapper user">
+                    <div class="message">${text}</div>
+                </div>`;
+            inputField.value = '';
+            inputField.style.height = '24px';
+            messageBox.scrollTop = messageBox.scrollHeight;
+
+            // లోడింగ్ మెసేజ్
+            const loadingId = 'loading-' + Date.now();
+            messageBox.innerHTML += `
+                <div class="message-wrapper ai" id="${loadingId}">
+                    <div class="message">యోచిస్తోంది...</div>
+                </div>`;
+            messageBox.scrollTop = messageBox.scrollHeight;
+
+            try {
+                const formData = new FormData();
+                formData.append("prompt", text);
+                formData.append("mode", currentMode);
+
+                const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                document.getElementById(loadingId).remove();
+                if(data.status === "success") {
+                    messageBox.innerHTML += `
+                        <div class="message-wrapper ai">
+                            <div class="message">${data.response}</div>
+                        </div>`;
+                } else {
+                    messageBox.innerHTML += `
+                        <div class="message-wrapper ai">
+                            <div class="message">సమస్య ఏర్పడింది: ${data.error_details}</div>
+                        </div>`;
+                }
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                messageBox.innerHTML += `
+                    <div class="message-wrapper ai">
+                        <div class="message">సర్వర్ కనెక్షన్ విఫలమైంది.</div>
+                    </div>`;
+            }
+            messageBox.scrollTop = messageBox.scrollHeight;
+        }
+
+        // Enter నొక్కితే మెసేజ్ వెళ్లేలా చేయడం
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
