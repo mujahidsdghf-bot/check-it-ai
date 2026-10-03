@@ -34,11 +34,16 @@ def send_otp():
   if request.method == "OPTIONS":
     return jsonify({}), 200
 
-  # JSON లేదా Form డేటా రెండింటినీ తీసుకునేలా
+  # డేటాను సురక్షితంగా రీడ్ చేయడానికి
   email = None
-  if request.is_json:
-    email = request.json.get("email")
-  else:
+  try:
+    data = request.get_json(silent=True)
+    if data and isinstance(data, dict):
+      email = data.get("email")
+  except Exception:
+    pass
+
+  if not email:
     email = request.form.get("email")
 
   if not email:
