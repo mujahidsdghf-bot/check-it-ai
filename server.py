@@ -5,15 +5,25 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # ఇది ఒక్కటే చాలు, డూప్లికేట్ హెడర్స్ రావు
+# అన్ని రకాల ఒరిజిన్స్ మరియు మెథడ్స్‌ని అనుమతించడానికి
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=False)
 
-# మీ జీమెయిల్ వివరాలు
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 SENDER_EMAIL = "gyhiffss1@gmail.com"
 SENDER_PASSWORD = "tzsj nbts kvnu fsti"
 
 otp_storage = {}
+
+
+@app.after_request
+def add_cors_headers(response):
+  response.headers["Access-Control-Allow-Origin"] = "*"
+  response.headers["Access-Control-Allow-Headers"] = (
+      "Content-Type,Authorization,X-Requested-With"
+  )
+  response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+  return response
 
 
 @app.route("/", methods=["GET"])
