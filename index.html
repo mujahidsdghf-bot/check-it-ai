@@ -267,7 +267,10 @@
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        async function sendOtpToEmail() {
+        // బ్యాక్‌ఎండ్ యూఆర్‌ఎల్‌ని సరిగ్గా ఇలాగే ఇవ్వండి (చివర్లో / ఉండకూడదు)
+const BACKEND_URL = "https://check-it-ai.onrender.com";
+
+async function sendOtpToEmail() {
     const emailInput = document.getElementById('user-email');
     const email = emailInput ? emailInput.value.trim() : '';
 
@@ -276,13 +279,12 @@
         return;
     }
 
-    alert("Sending OTP, please wait a moment...");
-
     try {
         const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify({ email: email })
         });
@@ -295,9 +297,10 @@
             document.getElementById('otp-group').style.display = 'block';
         }
     } catch (e) {
-        alert("కనెక్షన్ ఎర్రర్: " + e.message + ". రెండర్ సర్వర్ ఆన్‌లో ఉందో లేదో చెక్ చేయండి.");
+        alert("కనెక్షన్ ఎర్రర్: " + e.message);
     }
 }
+
 
 
 
