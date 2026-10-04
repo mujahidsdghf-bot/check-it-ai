@@ -271,13 +271,12 @@
     const emailInput = document.getElementById('user-email');
     const email = emailInput ? emailInput.value.trim() : '';
 
-    // డీబగ్గింగ్ కోసం ఈమెయిల్ ప్రింట్ చేసి చూపిస్తుంది
-    alert("Entered Email: " + email);
-
     if (!email || !email.includes('@')) {
         alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
         return;
     }
+
+    alert("Sending OTP, please wait a moment...");
 
     try {
         const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
@@ -296,9 +295,10 @@
             document.getElementById('otp-group').style.display = 'block';
         }
     } catch (e) {
-        alert("కనెక్షన్ ఎర్రర్: " + e.message);
+        alert("కనెక్షన్ ఎర్రర్: " + e.message + ". రెండర్ సర్వర్ ఆన్‌లో ఉందో లేదో చెక్ చేయండి.");
     }
 }
+
 
 
 
