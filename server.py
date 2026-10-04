@@ -34,17 +34,12 @@ def send_otp():
   if request.method == "OPTIONS":
     return jsonify({}), 200
 
-  # డేటాను సురక్షితంగా రీడ్ చేయడానికి
-  email = None
-  try:
-    data = request.get_json(silent=True)
-    if data and isinstance(data, dict):
-      email = data.get("email")
-  except Exception:
-    pass
-
-  if not email:
-    email = request.form.get("email")
+  # అన్ని రకాలుగా ఈమెయిల్‌ను రీడ్ చేసే కోడ్
+  email = (
+      request.form.get("email")
+      or request.args.get("email")
+      or (request.json.get("email") if request.is_json else None)
+  )
 
   if not email:
     return jsonify({"status": "error", "message": "Email is required"})
@@ -73,6 +68,7 @@ def send_otp():
         "status": "error",
         "message": f"SMTP Error: {str(e)}. Check your Gmail App Password.",
     })
+
 
 
 @app.route("/api/verify-otp", methods=["POST", "OPTIONS"])
