@@ -51,6 +51,7 @@ def send_otp():
     otp = str(random.randint(100000, 999999))
     otp_storage[email] = otp
 
+    # జీమెయిల్ ద్వారా అసలైన ఓటీపీని పంపే కోడ్
     msg = MIMEText(
         f"Your verification OTP for Check It AI is: {otp}\nValid for 10"
         " minutes."
@@ -67,7 +68,7 @@ def send_otp():
 
     return jsonify({"status": "success", "message": "OTP sent to your email successfully!"})
   except Exception as e:
-    return jsonify({"status": "error", "message": f"Server Error: {str(e)}"})
+    return jsonify({"status": "error", "message": f"SMTP Error: {str(e)}"})
 
 
 @app.route("/api/verify-otp", methods=["POST", "OPTIONS"])
