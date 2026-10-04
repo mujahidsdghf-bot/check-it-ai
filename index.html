@@ -31,7 +31,6 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
-            transition: background 0.3s, color 0.3s;
         }
         .header {
             padding: 12px 25px;
@@ -96,22 +95,11 @@
         .feature-card h4 { margin: 0 0 4px 0; font-size: 0.85rem; }
         .feature-card p { margin: 0; font-size: 0.7rem; color: var(--text-muted); }
 
-        /* మోడల్స్ (గ్యారంటీగా ఓపెన్ అయ్యేలా సెట్ చేయబడింది) */
         .modal {
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background: rgba(0,0,0,0.7); 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 9999;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 9999;
         }
-        .modal.active { 
-            display: flex !important; 
-        }
+        .modal.active { display: flex !important; }
         .modal-content {
             background: var(--panel-bg); border: 1px solid var(--border-color);
             padding: 25px; border-radius: 16px; width: 90%; max-width: 420px; position: relative;
@@ -166,20 +154,12 @@
                 <option value="en">English</option>
                 <option value="te">తెలుగు</option>
                 <option value="hi">हिन्दी</option>
-                <option value="es">Español</option>
-                <option value="fr">Français</option>
-                <option value="de">Deutsch</option>
-                <option value="ar">العربية</option>
-                <option value="zh">中文</option>
-                <option value="ja">日本語</option>
-                <option value="ru">Русский</option>
             </select>
         </div>
     </div>
 
     <div class="main-container">
         <div class="content-area" id="content-area">
-            
             <div class="welcome-box" id="home-view">
                 <h1 id="ui-title">What do you want to build?</h1>
                 <p id="ui-subtitle">Build apps, websites, AI videos, stories, and reels instantly.</p>
@@ -211,7 +191,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="chat-view" id="chat-view"></div>
         </div>
 
@@ -227,7 +206,7 @@
         </div>
     </div>
 
-    <!-- ఈమెయిల్ ఓటీపీ లాగిన్ మోడల్ -->
+    <!-- లాగిన్ మోడల్ -->
     <div class="modal" id="login-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('login-modal')">&times;</button>
@@ -251,75 +230,42 @@
         const BACKEND_URL = "https://check-it-ai.onrender.com";
         let lastGeneratedCode = "";
 
-        const translations = {
-            en: { title: "What do you want to build?", subtitle: "Build apps, websites, AI videos, stories, and reels instantly.", placeholder: "e.g., Build an app or AI video...", hint: "Press Enter to search", btn: "Generate 🚀", modalTitle: "Email OTP Login", lblEmail: "Enter your Email Address", lblOtp: "Enter OTP sent to your Email" },
-            te: { title: "మీకేం కావాలి? సృష్టించండి", subtitle: "యాప్స్, వెబ్‌సైట్లు, ఏఐ వీడియోలు, కథలు తక్షణమే సృష్టించండి.", placeholder: "ఉదాహరణకు: యాప్ లేదా ఏఐ వీడియో చేయి...", hint: "Enter నొక్కి సెర్చ్ చేయండి", btn: "Generate 🚀", modalTitle: "ఈమెయిల్ ఓటీపీ లాగిన్", lblEmail: "మీ ఈమెయిల్ అడ్రస్ ఇక్కడ ఇవ్వండి", lblOtp: "మీ ఈమెయిల్‌కు వచ్చిన ఓటీపీని ఎంటర్ చేయండి" },
-            hi: { title: "आप क्या बनाना चाहते हैं?", subtitle: "तुरंत ऐप्स, वेबसाइट, AI वीडियो और कहानियां बनाएं।", placeholder: "जैसे: ऐप या AI वीडियो बनाएं...", hint: "खोजने के लिए Enter दबाएं", btn: "Generate 🚀", modalTitle: "ईमेल ओटीपी लॉगिन", lblEmail: "अपना ईमेल पता दर्ज करें", lblOtp: "ओटीपी दर्ज करें" }
-        };
-
-        function changeLanguage() {
-            const lang = document.getElementById('lang-select').value;
-            const t = translations[lang] || translations['en'];
-            document.getElementById('ui-title').innerText = t.title;
-            document.getElementById('ui-subtitle').innerText = t.subtitle;
-            document.getElementById('user-input').placeholder = t.placeholder;
-            document.getElementById('ui-hint').innerText = t.hint;
-            document.getElementById('ui-btn').innerText = t.btn;
-            document.getElementById('modal-title').innerText = t.modalTitle;
-            document.getElementById('lbl-email').innerText = t.lblEmail;
-            document.getElementById('lbl-otp').innerText = t.lblOtp;
-        }
-
         function toggleTheme() { document.body.classList.toggle('light-theme'); }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        // లాగిన్ పాప్-అప్ గ్యారంటీగా ఓపెన్ అయ్యేలా ఫంక్షన్స్
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) {
-                modal.classList.add('active');
-                modal.style.display = 'flex';
-            }
-        }
-
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) {
-                modal.classList.remove('active');
-                modal.style.display = 'none';
-            }
-        }
-
+        // నేరుగా సర్వర్ ద్వారా జీమెయిల్‌కి ఓటీపీ పంపే ఫంక్షన్
         async function sendOtpToEmail() {
-    const emailInput = document.getElementById('user-email');
-    const email = emailInput ? emailInput.value.trim() : '';
+            const emailInput = document.getElementById('user-email');
+            const email = emailInput ? emailInput.value.trim() : '';
 
-    if (!email || !email.includes('@')) {
-        alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
-        return;
-    }
+            if (!email || !email.includes('@')) {
+                alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
+                return;
+            }
 
-    alert("OTP పంపుతోంది, దయచేసి వేచి ఉండండి...");
+            alert("OTP పంపుతోంది, మీ ఈమెయిల్‌ని చెక్ చేయండి...");
 
-    try {
-        // CORS సమస్య రాకుండా ఉండేందుకు JSONP / No-Cors మోడ్ లేదా ఫామ్ సబ్మిట్ పద్ధతి
-        const response = await fetch(`${BACKEND_URL}/api/send-otp`, {
-            method: 'POST',
-            mode: 'no-cors', // ఇది బ్రౌజర్ బ్లాకింగ్‌ను పూర్తిగా ఆపేస్తుంది
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email: email })
-        });
-        
-        // no-cors మోడ్ లో రెస్పాన్స్ బాడీ రీడ్ చేయలేము కాబట్టి, సక్సెస్ అయినట్లుగా ఓటీపీ బాక్స్ చూపిస్తాం
-        alert("OTP మీ ఈమెయిల్‌కు విజయవంతంగా పంపబడింది!");
-        document.getElementById('email-group').style.display = 'none';
-        document.getElementById('otp-group').style.display = 'block';
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const data = await res.json();
+                alert(data.message);
+                
+                if (data.status === "success") {
+                    document.getElementById('email-group').style.display = 'none';
+                    document.getElementById('otp-group').style.display = 'block';
+                }
+            } catch (e) {
+                alert("కనెక్షన్ ఎర్రర్: " + e.message);
+            }
+        }
 
-    } catch (e) {
-        alert("ఎర్రర్: " + e.message);
-    }
-}
+        // సర్వర్ ద్వారా ఓటీపీ వెరిఫై చేసే ఫంక్షన్
         async function verifyOtp() {
             const email = document.getElementById('user-email').value.trim();
             const otp = document.getElementById('user-otp').value.trim();
