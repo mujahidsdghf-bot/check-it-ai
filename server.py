@@ -36,25 +36,22 @@ def send_otp():
   if request.method == "OPTIONS":
     return jsonify({}), 200
 
-  email = None
   try:
-    if request.is_json:
-      data = request.get_json(silent=True)
-      if data:
-        email = data.get("email")
-  except Exception:
-    pass
+    data = request.get_json(silent=True)
+    email = None
+    if data and isinstance(data, dict):
+      email = data.get("email")
 
-  if not email:
-    email = request.form.get("email") or request.args.get("email")
+    if not email:
+      email = request.form.get("email") or request.args.get("email")
 
-  if not email:
-    return jsonify({"status": "error", "message": "Email is required"})
+    if not email:
+      return jsonify({"status": "error", "message": "Email is required"})
 
-  otp = str(random.randint(100000, 999999))
-  otp_storage[email] = otp
+    otp = str(random.randint(100000, 999999))
+    otp_storage[email] = otp
 
-  try:
+    # ఈమెయిల్ పంపే ప్రయత్నం
     msg = MIMEText(
         f"Your verification OTP for Check It AI is: {otp}\nValid for 10"
         " minutes."
@@ -71,10 +68,8 @@ def send_otp():
 
     return jsonify({"status": "success", "message": "OTP sent to your email successfully!"})
   except Exception as e:
-    return jsonify({
-        "status": "error",
-        "message": f"SMTP Error: {str(e)}. Check your Gmail App Password.",
-    })
+    return jsonify({"status": "error", "message": f"Server Error: {str(e)}"})
+
 
 
 @app.route("/api/verify-otp", methods=["POST", "OPTIONS"])
