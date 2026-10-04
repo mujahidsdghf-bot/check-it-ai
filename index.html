@@ -246,23 +246,24 @@
     alert("OTP పంపుతోంది, దయచేసి వేచి ఉండండి...");
 
     try {
-        // CORS బ్లాక్ అవ్వకుండా 'no-cors' మోడ్ వాడటం వల్ల రిక్వెస్ట్ కచ్చితంగా సర్వర్‌కి వెళ్తుంది
-        await fetch(`${BACKEND_URL}/api/send-otp`, {
+        const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
             method: 'POST',
-            mode: 'no-cors',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify({ email: email })
         });
         
-        // సర్వర్ ఈమెయిల్‌కు ఓటీపీ పంపే లోపు యూజర్‌కి నెక్స్ట్ స్టెప్ చూపించడం
-        alert("OTP మీ ఈమెయిల్‌కు విజయవంతంగా పంపబడింది! దయచేసి మీ జీమెయిల్ చెక్ చేయండి.");
-        document.getElementById('email-group').style.display = 'none';
-        document.getElementById('otp-group').style.display = 'block';
-
+        const data = await res.json();
+        alert(data.message);
+        
+        if (data.status === "success") {
+            document.getElementById('email-group').style.display = 'none';
+            document.getElementById('otp-group').style.display = 'block';
+        }
     } catch (e) {
-        alert("ఎర్రర్: " + e.message);
+        alert("కనెక్షన్ ఎర్రర్: " + e.message);
     }
 }
 
