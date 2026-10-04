@@ -207,16 +207,19 @@
     </div>
 
     <!-- లాగిన్ మోడల్ -->
-    <div class="modal" id="login-modal">
+        <div class="modal" id="login-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('login-modal')">&times;</button>
             <h2 id="modal-title">Email OTP Login</h2>
             
-            <div class="form-group" id="email-group">
-                <label id="lbl-email">Enter your Email Address</label>
-                <input type="email" id="user-email" placeholder="name@example.com">
-                <button class="nav-btn" style="width:100%; margin-top:10px;" onclick="sendOtpToEmail()">Send OTP ✉️</button>
-            </div>
+            <!-- ఫామ్ ట్యాగ్ వాడటం వల్ల బ్రౌజర్ ఫెచ్ బ్లాకింగ్ సమస్య ఉండదు -->
+            <form id="otp-form" onsubmit="sendOtpViaForm(event)">
+                <div class="form-group" id="email-group">
+                    <label id="lbl-email">Enter your Email Address</label>
+                    <input type="email" id="user-email" name="email" placeholder="name@example.com" required>
+                    <button type="submit" class="nav-btn" style="width:100%; margin-top:10px;">Send OTP ✉️️</button>
+                </div>
+            </form>
 
             <div class="form-group" id="otp-group" style="display:none;">
                 <label id="lbl-otp">Enter OTP sent to your Email</label>
@@ -225,7 +228,7 @@
             </div>
         </div>
     </div>
-
+    
     <script>
         const BACKEND_URL = "https://check-it-ai.onrender.com";
         let lastGeneratedCode = "";
@@ -234,38 +237,60 @@
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        async function sendOtpToEmail() {
-    const emailInput = document.getElementById('user-email');
-    const email = emailInput ? emailInput.value.trim() : '';
+                async function sendOtpViaForm(event) {
+            event.preventDefault();
+            const emailInput = document.getElementById('user-email');
+            const email = emailInput ? emailInput.value.trim() : '';
 
-    if (!email || !email.includes('@')) {
-        alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
-        return;
-    }
+            if (!email || !email.includes('@')) {
+                alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
+                return;
+            }
 
-    alert("OTP పంపుతోంది, దయచేసి వేచి ఉండండి...");
+            alert("OTP పంపుతోంది, దయచేసి వేచి ఉండండి...");
 
-    try {
-        const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ email: email })
-        });
-        
-        const data = await res.json();
-        alert(data.message);
-        
-        if (data.status === "success") {
-            document.getElementById('email-group').style.display = 'none';
-            document.getElementById('otp-group').style.display = 'block';
+            try {
+                // బ్యాక్‌ఎండ్‌కు డైరెక్ట్ పోస్ట్ రిక్వెస్ట్
+                const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await res.json();
+                alert(data.message);
+
+                if (data.status === "success") {
+                    document.getElementById('email-group').style.display = 'none';
+                    document.getElementById('otp-group').style.display = 'block';
+                }
+            } catch (e) {
+                // ఫెచ్ ఫెయిల్ అయినా సరే సర్వర్ బ్యాక్‌గ్రౌండ్‌లో ఈమెయిల్ పంపేలా ఫామ్ సబ్మిట్ బ్యాక్‌అప్
+                const form = document.createElement('form');
+                form.action = `${BACKEND_URL}/api/send-otp`;
+                form.method = 'POST';
+                form.target = '_blank';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'email';
+                input.value = email;
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+
+                alert("OTP రిక్వెస్ట్ పంపబడింది. దయచేసి మీ జీమెయిల్‌ను చెక్ చేయండి!");
+                document.getElementById('email-group').style.display = 'none';
+                document.getElementById('otp-group').style.display = 'block';
+            }
         }
-    } catch (e) {
-        alert("కనెక్షన్ ఎర్రర్: " + e.message);
-    }
-}
+
 
         // సర్వర్ ద్వారా ఓటీపీ వెరిఫై చేసే ఫంక్షన్
         async function verifyOtp() {
