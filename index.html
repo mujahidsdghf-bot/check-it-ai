@@ -298,9 +298,12 @@
         return;
     }
 
+    alert("OTP పంపుతోంది, దయచేసి వేచి ఉండండి...");
+
     try {
         const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -316,10 +319,9 @@
             document.getElementById('otp-group').style.display = 'block';
         }
     } catch (e) {
-        alert("కనెక్షన్ ఎర్రర్: " + e.message);
+        alert("ఫెచ్ ఎర్రర్: నెట్‌వర్క్ కనెక్షన్ లేదా సర్వర్ బ్లాక్ అయింది (" + e.message + ")");
     }
 }
-
 
         async function verifyOtp() {
             const email = document.getElementById('user-email').value.trim();
