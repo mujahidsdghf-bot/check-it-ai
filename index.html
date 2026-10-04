@@ -268,9 +268,11 @@
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         async function sendOtpToEmail() {
-    // ఏ ఐడీ ఉన్నా సరే ఈమెయిల్ ఇన్‌పుట్‌ను గుర్తించేలా కోడ్
-    const emailInput = document.getElementById('user-email') || document.getElementById('email') || document.querySelector('input[type="email"]');
+    const emailInput = document.getElementById('user-email');
     const email = emailInput ? emailInput.value.trim() : '';
+
+    // డీబగ్గింగ్ కోసం ఈమెయిల్ ప్రింట్ చేసి చూపిస్తుంది
+    alert("Entered Email: " + email);
 
     if (!email || !email.includes('@')) {
         alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
