@@ -290,42 +290,36 @@
         }
 
         async function sendOtpToEmail() {
-            const emailInput = document.getElementById('user-email');
-            const email = emailInput ? emailInput.value.trim() : '';
+    const emailInput = document.getElementById('user-email');
+    const email = emailInput ? emailInput.value.trim() : '';
 
-            if (!email || !email.includes('@')) {
-                alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
-                return;
-            }
+    if (!email || !email.includes('@')) {
+        alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
+        return;
+    }
 
-            alert("OTP పంపుతోంది, దయచేసి వేచి ఉండండి...");
-
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 20000);
-
-                const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ email: email }),
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                const data = await res.json();
-                alert(data.message);
-                
-                if (data.status === "success") {
-                    document.getElementById('email-group').style.display = 'none';
-                    document.getElementById('otp-group').style.display = 'block';
-                }
-            } catch (e) {
-                alert("కనెక్షన్ ఎర్రర్: " + e.message);
-            }
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        });
+        
+        const data = await res.json();
+        alert(data.message);
+        
+        if (data.status === "success") {
+            document.getElementById('email-group').style.display = 'none';
+            document.getElementById('otp-group').style.display = 'block';
         }
+    } catch (e) {
+        alert("కనెక్షన్ ఎర్రర్: " + e.message);
+    }
+}
+
 
         async function verifyOtp() {
             const email = document.getElementById('user-email').value.trim();
