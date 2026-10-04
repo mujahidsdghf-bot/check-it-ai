@@ -279,16 +279,23 @@ async function sendOtpToEmail() {
         return;
     }
 
+    alert("OTP పంపుతోంది, సర్వర్ రెస్పాండ్ అయ్యే వరకు దయచేసి వేచి ఉండండి...");
+
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 సెకండ్లు టైమ్‌అవుట్ సెట్ చేయడం
+
         const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({ email: email })
+            body: JSON.stringify({ email: email }),
+            signal: controller.signal
         });
         
+        clearTimeout(timeoutId);
         const data = await res.json();
         alert(data.message);
         
@@ -297,9 +304,14 @@ async function sendOtpToEmail() {
             document.getElementById('otp-group').style.display = 'block';
         }
     } catch (e) {
-        alert("కనెక్షన్ ఎర్రర్: " + e.message);
+        if (e.name === 'AbortError') {
+            alert("కనెక్షన్ టైమ్ అవుట్ అయింది. రెండర్ సర్వర్ ఇంకా ఆన్ అవ్వలేదు, దయచేసి ఒకసారి మీ బ్యాక్‌‌ఎండ్ లింక్‌ని బ్రౌజర్‌లో ఓపెన్ చేసి మళ్లీ ప్రయత్నించండి.");
+        } else {
+            alert("కనెక్షన్ ఎర్రర్: " + e.message + ". రెండర్ సర్వర్ ఆన్‌లో ఉందో లేదో చెక్ చేయండి.");
+        }
     }
 }
+
 
 
 
