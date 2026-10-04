@@ -1,3 +1,4 @@
+import os
 import random
 import smtplib
 from email.mime.text import MIMEText
@@ -5,8 +6,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-# అన్ని రకాల ఒరిజిన్స్ మరియు మెథడ్స్‌ని అనుమతించడానికి
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=False)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
@@ -51,7 +51,6 @@ def send_otp():
     otp = str(random.randint(100000, 999999))
     otp_storage[email] = otp
 
-    # ఈమెయిల్ పంపే ప్రయత్నం
     msg = MIMEText(
         f"Your verification OTP for Check It AI is: {otp}\nValid for 10"
         " minutes."
@@ -71,35 +70,31 @@ def send_otp():
     return jsonify({"status": "error", "message": f"Server Error: {str(e)}"})
 
 
-
 @app.route("/api/verify-otp", methods=["POST", "OPTIONS"])
 def verify_otp():
   if request.method == "OPTIONS":
     return jsonify({}), 200
 
-  email = None
-  user_otp = None
   try:
-    if request.is_json:
-      data = request.get_json(silent=True)
-      if data:
-        email = data.get("email")
-        user_otp = data.get("otp")
-  except Exception:
-    pass
+    data = request.get_json(silent=True)
+    email = None
+    user_otp = None
+    if data and isinstance(data, dict):
+      email = data.get("email")
+      user_otp = data.get("otp")
 
-  if not email:
-    email = request.form.get("email") or request.args.get("email")
-  if not user_otp:
-    user_otp = request.form.get("otp") or request.args.get("otp")
+    if not email:
+      email = request.form.get("email") or request.args.get("email")
+    if not user_otp:
+      user_otp = request.form.get("otp") or request.args.get("otp")
 
-  if otp_storage.get(email) == user_otp:
-    return jsonify({"status": "success", "message": "Login successful!"})
-  return jsonify({"status": "error", "message": "Invalid OTP"})
+    if otp_storage.get(email) == user_otp:
+      return jsonify({"status": "success", "message": "Login successful!"})
+    return jsonify({"status": "error", "message": "Invalid OTP"})
+  except Exception as e:
+    return jsonify({"status": "error", "message": f"Server Error: {str(e)}"})
 
 
 if __name__ == "__main__":
-  import os
-
   port = int(os.environ.get("PORT", 5000))
   app.run(host="0.0.0.0", port=port)
