@@ -1,4 +1,4 @@
-Import random
+import random
 import smtplib
 from email.mime.text import MIMEText
 from flask import Flask, jsonify, request
@@ -10,8 +10,8 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # మీ జీమెయిల్ వివరాలు ఇక్కడ ఇవ్వండి
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "gyhiffss1@gmail.com"  # మీ అసలు జీమెయిల్
-SENDER_PASSWORD = "tzsj nbts kvnu fsti"  # గూగుల్ 16 అంకెల యాప్ పాస్‌వర్డ్
+SENDER_EMAIL = "gyhiffss1@gmail.com"
+SENDER_PASSWORD = "tzsj nbts kvnu fsti"
 
 otp_storage = {}
 
@@ -34,12 +34,17 @@ def send_otp():
   if request.method == "OPTIONS":
     return jsonify({}), 200
 
-  # అన్ని రకాలుగా ఈమెయిల్‌ను రీడ్ చేసే కోడ్
-  email = (
-      request.form.get("email")
-      or request.args.get("email")
-      or (request.json.get("email") if request.is_json else None)
-  )
+  email = None
+  try:
+    if request.is_json:
+      data = request.get_json(silent=True)
+      if data:
+        email = data.get("email")
+  except Exception:
+    pass
+
+  if not email:
+    email = request.form.get("email") or request.args.get("email")
 
   if not email:
     return jsonify({"status": "error", "message": "Email is required"})
@@ -70,7 +75,6 @@ def send_otp():
     })
 
 
-
 @app.route("/api/verify-otp", methods=["POST", "OPTIONS"])
 def verify_otp():
   if request.method == "OPTIONS":
@@ -78,12 +82,19 @@ def verify_otp():
 
   email = None
   user_otp = None
-  if request.is_json:
-    email = request.json.get("email")
-    user_otp = request.json.get("otp")
-  else:
-    email = request.form.get("email")
-    user_otp = request.form.get("otp")
+  try:
+    if request.is_json:
+      data = request.get_json(silent=True)
+      if data:
+        email = data.get("email")
+        user_otp = data.get("otp")
+  except Exception:
+    pass
+
+  if not email:
+    email = request.form.get("email") or request.args.get("email")
+  if not user_otp:
+    user_otp = request.form.get("otp") or request.args.get("otp")
 
   if otp_storage.get(email) == user_otp:
     return jsonify({"status": "success", "message": "Login successful!"})
