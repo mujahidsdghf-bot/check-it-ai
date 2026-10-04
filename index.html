@@ -96,12 +96,22 @@
         .feature-card h4 { margin: 0 0 4px 0; font-size: 0.85rem; }
         .feature-card p { margin: 0; font-size: 0.7rem; color: var(--text-muted); }
 
-        /* మోడల్స్ */
+        /* మోడల్స్ (గ్యారంటీగా ఓపెన్ అయ్యేలా సెట్ చేయబడింది) */
         .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.7); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 9999;
         }
-        .modal.active { display: flex; }
+        .modal.active { 
+            display: flex !important; 
+        }
         .modal-content {
             background: var(--panel-bg); border: 1px solid var(--border-color);
             padding: 25px; border-radius: 16px; width: 90%; max-width: 420px; position: relative;
@@ -145,16 +155,13 @@
     <div class="header">
         <div class="logo" onclick="resetHome()">⚡ Check It AI</div>
         <div class="header-right">
-            <!-- ఏఐ మోడల్ సెలెక్టర్ -->
             <select class="model-selector" id="ai-model">
                 <option value="gpt-4">GPT-4 Turbo</option>
                 <option value="claude-3">Claude 3.5 Sonnet</option>
                 <option value="deepseek">DeepSeek R1</option>
             </select>
-            <!-- థీమ్ టోగుల్ -->
             <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
             <button class="nav-btn" onclick="openModal('login-modal')">🔒 Login</button>
-            <!-- అన్ని భాషల డ్రాప్‌డౌన్ -->
             <select class="language-selector" id="lang-select" onchange="changeLanguage()">
                 <option value="en">English</option>
                 <option value="te">తెలుగు</option>
@@ -264,58 +271,88 @@
         }
 
         function toggleTheme() { document.body.classList.toggle('light-theme'); }
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        // బ్యాక్‌ఎండ్ యూఆర్‌ఎల్‌ని సరిగ్గా ఇలాగే ఇవ్వండి (చివర్లో / ఉండకూడదు)
-const BACKEND_URL = "https://check-it-ai.onrender.com";
-
-async function sendOtpToEmail() {
-    const emailInput = document.getElementById('user-email');
-    const email = emailInput ? emailInput.value.trim() : '';
-
-    if (!email || !email.includes('@')) {
-        alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
-        return;
-    }
-
-    alert("OTP పంపుతోంది, సర్వర్ రెస్పాండ్ అయ్యే వరకు దయచేసి వేచి ఉండండి...");
-
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 సెకండ్లు టైమ్‌అవుట్ సెట్ చేయడం
-
-        const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ email: email }),
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        const data = await res.json();
-        alert(data.message);
-        
-        if (data.status === "success") {
-            document.getElementById('email-group').style.display = 'none';
-            document.getElementById('otp-group').style.display = 'block';
+        // లాగిన్ పాప్-అప్ గ్యారంటీగా ఓపెన్ అయ్యేలా ఫంక్షన్స్
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+            }
         }
-    } catch (e) {
-        if (e.name === 'AbortError') {
-            alert("కనెక్షన్ టైమ్ అవుట్ అయింది. రెండర్ సర్వర్ ఇంకా ఆన్ అవ్వలేదు, దయచేసి ఒకసారి మీ బ్యాక్‌‌ఎండ్ లింక్‌ని బ్రౌజర్‌లో ఓపెన్ చేసి మళ్లీ ప్రయత్నించండి.");
-        } else {
-            alert("కనెక్షన్ ఎర్రర్: " + e.message + ". రెండర్ సర్వర్ ఆన్‌లో ఉందో లేదో చెక్ చేయండి.");
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
         }
-    }
-}
 
+        async function sendOtpToEmail() {
+            const emailInput = document.getElementById('user-email');
+            const email = emailInput ? emailInput.value.trim() : '';
 
+            if (!email || !email.includes('@')) {
+                alert("దయచేసి సరైన ఈమెయిల్ అడ్రస్ ఎంటర్ చేయండి!");
+                return;
+            }
 
+            alert("OTP పంపుతోంది, దయచేసి వేచి ఉండండి...");
 
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 20000);
 
+                const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email }),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                const data = await res.json();
+                alert(data.message);
+                
+                if (data.status === "success") {
+                    document.getElementById('email-group').style.display = 'none';
+                    document.getElementById('otp-group').style.display = 'block';
+                }
+            } catch (e) {
+                alert("కనెక్షన్ ఎర్రర్: " + e.message);
+            }
+        }
+
+        async function verifyOtp() {
+            const email = document.getElementById('user-email').value.trim();
+            const otp = document.getElementById('user-otp').value.trim();
+
+            if (!otp) {
+                alert("దయచేసి ఓటీపీని ఎంటర్ చేయండి!");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/verify-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, otp: otp })
+                });
+
+                const data = await res.json();
+                alert(data.message);
+
+                if (data.status === "success") {
+                    closeModal('login-modal');
+                }
+            } catch (e) {
+                alert("వెరిఫికేషన్ ఎర్రర్: " + e.message);
+            }
+        }
 
         function handleKeyPress(e) {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendPrompt(); }
