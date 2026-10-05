@@ -149,7 +149,8 @@
                 <option value="deepseek">DeepSeek R1</option>
             </select>
             <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
-            <button class="nav-btn" onclick="openModal('login-modal')">🔒 Login</button>
+            <!-- ఇక్కడ id="login-btn-ui" జోడించబడింది -->
+            <button class="nav-btn" id="login-btn-ui" onclick="openModal('login-modal')">🔒 Login</button>
             <select class="language-selector" id="lang-select" onchange="changeLanguage()">
                 <option value="en">English</option>
                 <option value="te">తెలుగు</option>
@@ -207,17 +208,16 @@
     </div>
 
     <!-- లాగిన్ మోడల్ -->
-        <div class="modal" id="login-modal">
+    <div class="modal" id="login-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('login-modal')">&times;</button>
             <h2 id="modal-title">Email OTP Login</h2>
             
-            <!-- ఫామ్ ట్యాగ్ వాడటం వల్ల బ్రౌజర్ ఫెచ్ బ్లాకింగ్ సమస్య ఉండదు -->
             <form id="otp-form" onsubmit="sendOtpViaForm(event)">
                 <div class="form-group" id="email-group">
                     <label id="lbl-email">Enter your Email Address</label>
                     <input type="email" id="user-email" name="email" placeholder="name@example.com" required>
-                    <button type="submit" class="nav-btn" style="width:100%; margin-top:10px;">Send OTP ✉️️</button>
+                    <button type="submit" class="nav-btn" style="width:100%; margin-top:10px;">Send OTP ✉</button>
                 </div>
             </form>
 
@@ -237,7 +237,7 @@
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-                async function sendOtpViaForm(event) {
+        async function sendOtpViaForm(event) {
             event.preventDefault();
             const emailInput = document.getElementById('user-email');
             const email = emailInput ? emailInput.value.trim() : '';
@@ -250,7 +250,6 @@
             alert("OTP పంపుతోంది, దయచేసి వేచి ఉండండి...");
 
             try {
-                // బ్యాక్‌ఎండ్‌కు డైరెక్ట్ పోస్ట్ రిక్వెస్ట్
                 const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
                     method: 'POST',
                     mode: 'cors',
@@ -269,7 +268,6 @@
                     document.getElementById('otp-group').style.display = 'block';
                 }
             } catch (e) {
-                // ఫెచ్ ఫెయిల్ అయినా సరే సర్వర్ బ్యాక్‌గ్రౌండ్‌లో ఈమెయిల్ పంపేలా ఫామ్ సబ్మిట్ బ్యాక్‌అప్
                 const form = document.createElement('form');
                 form.action = `${BACKEND_URL}/api/send-otp`;
                 form.method = 'POST';
@@ -291,8 +289,7 @@
             }
         }
 
-
-        // సర్వర్ ద్వారా ఓటీపీ వెరిఫై చేసే ఫంక్షన్
+        // సర్వర్ ద్వారా ఓటీపీ వెరిఫై చేసే ఫంక్షన్ (లాగిన్ అయ్యాక బటన్ టెక్స్ట్ మార్చే కోడ్ ఇక్కడ ఉంది)
         async function verifyOtp() {
             const email = document.getElementById('user-email').value.trim();
             const otp = document.getElementById('user-otp').value.trim();
@@ -314,6 +311,14 @@
 
                 if (data.status === "success") {
                     closeModal('login-modal');
+                    
+                    // లాగిన్ విజయవంతం కాగానే లాగిన్ బటన్ స్థానంలో ఈమెయిల్ చూపించే కోడ్
+                    const loginBtn = document.getElementById('login-btn-ui');
+                    if (loginBtn) {
+                        loginBtn.innerText = "👤 " + email;
+                        loginBtn.style.backgroundColor = "#3b82f6"; 
+                        loginBtn.onclick = null; 
+                    }
                 }
             } catch (e) {
                 alert("వెరిఫికేషన్ ఎర్రర్: " + e.message);
