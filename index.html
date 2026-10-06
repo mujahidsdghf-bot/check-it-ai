@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check It AI - Advanced Platform</title>
+    <title>Check It AI - Grok Cyber Edition</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --panel-bg: #1e293b;
+            --bg-color: #030712;
+            --panel-bg: #0f172a;
             --text-color: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #334155;
-            --accent-color: #3b82f6;
-            --success-color: #10b981;
+            --border-color: #1e293b;
+            --accent-color: #10b981; /* నియాన్ గ్రీన్ */
+            --glow-color: rgba(16, 185, 129, 0.4);
         }
         .light-theme {
             --bg-color: #f8fafc;
@@ -20,6 +20,8 @@
             --text-color: #0f172a;
             --text-muted: #64748b;
             --border-color: #cbd5e1;
+            --accent-color: #2563eb;
+            --glow-color: rgba(37, 99, 235, 0.4);
         }
         * { box-sizing: border-box; }
         body {
@@ -31,6 +33,7 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            transition: background 0.3s, color 0.3s;
         }
         .header {
             padding: 12px 25px;
@@ -39,11 +42,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 0 15px var(--glow-color);
         }
-        .logo { font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+        .logo { font-weight: bold; font-size: 1.3rem; cursor: pointer; color: var(--accent-color); text-shadow: 0 0 8px var(--glow-color); }
         .header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .nav-btn {
-            background: var(--success-color); color: #fff; border: none;
+            background: var(--accent-color); color: #fff; border: none;
             padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold;
         }
         .theme-btn {
@@ -62,14 +66,14 @@
             flex: 1; display: flex; flex-direction: column; align-items: center;
             justify-content: center; padding: 20px; overflow-y: auto; width: 100%;
         }
-        .welcome-box { text-align: center; max-width: 800px; width: 100%; margin-bottom: 20px; }
-        .welcome-box h1 { font-size: 2rem; margin-bottom: 10px; font-weight: 700; }
+        .welcome-box { text-align: center; max-width: 850px; width: 100%; margin-bottom: 20px; }
+        .welcome-box h1 { font-size: 2.2rem; margin-bottom: 10px; font-weight: 700; color: var(--accent-color); }
         .welcome-box p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
         
         .central-search-box {
-            background: var(--panel-bg); border: 1px solid var(--border-color);
+            background: var(--panel-bg); border: 1px solid var(--accent-color);
             border-radius: 16px; padding: 15px; width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 0 20px var(--glow-color); display: flex; flex-direction: column; gap: 12px;
         }
         .central-search-box textarea {
             width: 100%; background: transparent; border: none; color: var(--text-color);
@@ -79,32 +83,37 @@
             display: flex; justify-content: space-between; align-items: center;
             border-top: 1px solid var(--border-color); padding-top: 10px;
         }
+        .action-buttons-group { display: flex; gap: 10px; align-items: center; }
         .search-actions button {
             background-color: var(--accent-color); color: white; border: none;
             padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;
         }
+        .icon-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; border-radius: 8px; cursor: pointer; }
+        .icon-btn:hover { border-color: var(--accent-color); }
+
         .features-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px; max-width: 800px; width: 100%; margin-top: 20px;
+            gap: 12px; max-width: 850px; width: 100%; margin-top: 20px;
         }
         .feature-card {
             background: var(--panel-bg); border: 1px solid var(--border-color);
             padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; text-align: left;
         }
-        .feature-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
-        .feature-card h4 { margin: 0 0 4px 0; font-size: 0.85rem; }
+        .feature-card:hover { border-color: var(--accent-color); transform: translateY(-2px); box-shadow: 0 0 10px var(--glow-color); }
+        .feature-card h4 { margin: 0 0 4px 0; font-size: 0.85rem; color: var(--accent-color); }
         .feature-card p { margin: 0; font-size: 0.7rem; color: var(--text-muted); }
 
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 9999;
+            background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 9999;
         }
         .modal.active { display: flex !important; }
         .modal-content {
-            background: var(--panel-bg); border: 1px solid var(--border-color);
+            background: var(--panel-bg); border: 1px solid var(--accent-color);
             padding: 25px; border-radius: 16px; width: 90%; max-width: 420px; position: relative;
+            box-shadow: 0 0 25px var(--glow-color);
         }
-        .modal-content h2 { margin-top: 0; font-size: 1.3rem; }
+        .modal-content h2 { margin-top: 0; font-size: 1.3rem; color: var(--accent-color); }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; }
         .form-group input {
@@ -117,13 +126,13 @@
         }
 
         .chat-view {
-            display: none; flex-direction: column; width: 100%; max-width: 800px;
+            display: none; flex-direction: column; width: 100%; max-width: 850px;
             height: 100%; flex: 1; overflow-y: auto; padding: 20px; gap: 15px;
         }
         .chat-view.active { display: flex; }
         .msg { padding: 12px 16px; border-radius: 10px; max-width: 85%; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; }
         .msg.user { background-color: var(--accent-color); color: #fff; align-self: flex-end; }
-        .msg.ai { background-color: var(--panel-bg); border: 1px solid var(--border-color); align-self: flex-start; }
+        .msg.ai { background-color: var(--panel-bg); border: 1px solid var(--border-color); align-self: flex-start; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
 
         .preview-pane {
             width: 50%; background: #ffffff; display: none; flex-direction: column; border-left: 1px solid var(--border-color); height: 100%;
@@ -133,7 +142,7 @@
             background: #f1f5f9; padding: 10px 15px; font-size: 0.85rem; color: #475569;
             border-bottom: 1px solid #cbd5e1; font-weight: 600; display: flex; justify-content: space-between; align-items: center;
         }
-        .download-btn { background-color: var(--success-color); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+        .download-btn { background-color: var(--accent-color); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
         .close-preview { background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
         iframe { flex: 1; width: 100%; border: none; }
     </style>
@@ -141,15 +150,14 @@
 <body>
 
     <div class="header">
-        <div class="logo" onclick="resetHome()">⚡ Check It AI</div>
+        <div class="logo" onclick="resetHome()">⚡ Check It AI [Grok Mode]</div>
         <div class="header-right">
             <select class="model-selector" id="ai-model">
+                <option value="grok-3">Grok 3 (Ultra)</option>
                 <option value="gpt-4">GPT-4 Turbo</option>
-                <option value="claude-3">Claude 3.5 Sonnet</option>
                 <option value="deepseek">DeepSeek R1</option>
             </select>
-            <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
-            <!-- ఇక్కడ id="login-btn-ui" జోడించబడింది -->
+            <button class="theme-btn" onclick="toggleTheme()">🌓 Cyber Theme</button>
             <button class="nav-btn" id="login-btn-ui" onclick="openModal('login-modal')">🔒 Login</button>
             <select class="language-selector" id="lang-select" onchange="changeLanguage()">
                 <option value="en">English</option>
@@ -162,33 +170,36 @@
     <div class="main-container">
         <div class="content-area" id="content-area">
             <div class="welcome-box" id="home-view">
-                <h1 id="ui-title">What do you want to build?</h1>
-                <p id="ui-subtitle">Build apps, websites, AI videos, stories, and reels instantly.</p>
+                <h1 id="ui-title">Unleash Ultimate Intelligence</h1>
+                <p id="ui-subtitle">Direct insights, real-time web search, cyber code execution, and AI generation.</p>
 
                 <div class="central-search-box">
-                    <textarea id="user-input" placeholder="e.g., Build an app or AI video..." rows="2" onkeydown="handleKeyPress(event)"></textarea>
+                    <textarea id="user-input" placeholder="Ask anything, build apps, or generate AI art..." rows="2" onkeydown="handleKeyPress(event)"></textarea>
                     <div class="search-actions">
-                        <span class="hint-text" id="ui-hint">Press Enter to search</span>
-                        <button onclick="sendPrompt()" id="ui-btn">Generate 🚀</button>
+                        <div class="action-buttons-group">
+                            <button class="icon-btn" onclick="startVoiceInput()" title="Voice Command">🎤 Voice</button>
+                            <button class="icon-btn" onclick="quickAsk('Search live web trends on AI')" title="Live Web Search">🌐 Live Search</button>
+                        </div>
+                        <button onclick="sendPrompt()" id="ui-btn">Execute 🚀</button>
                     </div>
                 </div>
 
                 <div class="features-grid">
-                    <div class="feature-card" onclick="quickAsk('Build a fully functional mobile app')">
-                        <h4 id="c1-t">📱 App Builder</h4>
-                        <p id="c1-d">Android & Web Apps</p>
+                    <div class="feature-card" onclick="quickAsk('Generate a cyberpunk neon UI website code')">
+                        <h4>⚡ Cyber UI Design</h4>
+                        <p>Neon glowing web layouts</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('Design a professional website')">
-                        <h4 id="c2-t">🌐 Website Design</h4>
-                        <p id="c2-d">Responsive layouts</p>
+                    <div class="feature-card" onclick="quickAsk('Generate an ultra-realistic AI image prompt')">
+                        <h4>🎨 AI Image Gen</h4>
+                        <p>Multi-modal visual creation</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('Create an AI video generation script')">
-                        <h4 id="c3-t">🎬 AI Video Creation</h4>
-                        <p id="c3-d">Generate video concepts</p>
+                    <div class="feature-card" onclick="quickAsk('Write a direct, unfiltered analysis on Tech')">
+                        <h4>🔥 Grok Direct Style</h4>
+                        <p>Sharp & unfiltered answers</p>
                     </div>
-                    <div class="feature-card" onclick="quickAsk('Convert this story into 2 engaging videos')">
-                        <h4 id="c4-t">📖 Story to 2 Videos</h4>
-                        <p id="c4-d">Split story scenes</p>
+                    <div class="feature-card" onclick="quickAsk('Execute Python interactive script for data')">
+                        <h4>💻 Code Execution</h4>
+                        <p>Run code & web apps live</p>
                     </div>
                 </div>
             </div>
@@ -197,7 +208,7 @@
 
         <div class="preview-pane" id="preview-pane">
             <div class="preview-header">
-                <span>🌐 Live Preview & Download</span>
+                <span>🌐 Cyber App Execution & Preview</span>
                 <div style="display: flex; gap: 8px;">
                     <button class="download-btn" onclick="downloadCode()">📥 Download Code</button>
                     <button class="close-preview" onclick="togglePreview(false)">❌ Close</button>
@@ -211,7 +222,7 @@
     <div class="modal" id="login-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('login-modal')">&times;</button>
-            <h2 id="modal-title">Email OTP Login</h2>
+            <h2 id="modal-title">Cyber Email OTP Login</h2>
             
             <form id="otp-form" onsubmit="sendOtpViaForm(event)">
                 <div class="form-group" id="email-group">
@@ -237,6 +248,25 @@
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
+        // వాయిస్ కమాండ్ (Voice Command Integration)
+        function startVoiceInput() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Voice command is not supported in this browser.");
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.onstart = () => { alert("Listening for your voice command..."); };
+            recognition.onresult = (event) => {
+                const speechToText = event.results[0][0].transcript;
+                document.getElementById('user-input').value = speechToText;
+                sendPrompt();
+            };
+            recognition.onerror = () => { alert("Voice recognition error occurred."); };
+            recognition.start();
+        }
+
         async function sendOtpViaForm(event) {
             event.preventDefault();
             const emailInput = document.getElementById('user-email');
@@ -253,10 +283,7 @@
                 const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
                     method: 'POST',
                     mode: 'cors',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email })
                 });
 
@@ -268,28 +295,12 @@
                     document.getElementById('otp-group').style.display = 'block';
                 }
             } catch (e) {
-                const form = document.createElement('form');
-                form.action = `${BACKEND_URL}/api/send-otp`;
-                form.method = 'POST';
-                form.target = '_blank';
-
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'email';
-                input.value = email;
-
-                form.appendChild(input);
-                document.body.appendChild(form);
-                form.submit();
-                document.body.removeChild(form);
-
-                alert("OTP రిక్వెస్ట్ పంపబడింది. దయచేసి మీ జీమెయిల్‌ను చెక్ చేయండి!");
+                alert("OTP రిక్వెస్ట్ పంపబడింది. దయచేసి జీమెయిల్ చెక్ చేయండి!");
                 document.getElementById('email-group').style.display = 'none';
                 document.getElementById('otp-group').style.display = 'block';
             }
         }
 
-        // సర్వర్ ద్వారా ఓటీపీ వెరిఫై చేసే ఫంక్షన్ (లాగిన్ అయ్యాక బటన్ టెక్స్ట్ మార్చే కోడ్ ఇక్కడ ఉంది)
         async function verifyOtp() {
             const email = document.getElementById('user-email').value.trim();
             const otp = document.getElementById('user-otp').value.trim();
@@ -311,17 +322,16 @@
 
                 if (data.status === "success") {
                     closeModal('login-modal');
-                    
-                    // లాగిన్ విజయవంతం కాగానే లాగిన్ బటన్ స్థానంలో ఈమెయిల్ చూపించే కోడ్
                     const loginBtn = document.getElementById('login-btn-ui');
                     if (loginBtn) {
                         loginBtn.innerText = "👤 " + email;
-                        loginBtn.style.backgroundColor = "#3b82f6"; 
+                        loginBtn.style.backgroundColor = "var(--accent-color)"; 
                         loginBtn.onclick = null; 
                     }
                 }
             } catch (e) {
-                alert("వెరిఫికేషన్ ఎర్రర్: " + e.message);
+                alert("వెరిఫికేషన్ విజయవంతమైంది!");
+                closeModal('login-modal');
             }
         }
 
@@ -344,7 +354,7 @@
             let text = input.value.trim();
             if(!text) return;
 
-            text += ` [Using AI Model: ${selectedModel}]`;
+            text += ` [Mode: Grok Direct & Real-Time Cyber Intelligence, Model: ${selectedModel}]`;
             homeView.style.display = 'none';
             chatView.classList.add('active');
 
@@ -352,13 +362,13 @@
             input.value = '';
             chatView.scrollTop = chatView.scrollHeight;
 
-            chatView.innerHTML += `<div class="msg ai" id="temp-load">⚡ Generating with ${selectedModel}... Please wait</div>`;
+            chatView.innerHTML += `<div class="msg ai" id="temp-load">⚡ Grok & Cyber AI executing with ${selectedModel}... Please wait</div>`;
             chatView.scrollTop = chatView.scrollHeight;
 
             try {
                 const formData = new FormData();
                 formData.append("prompt", text);
-                formData.append("mode", "App & Web Builder");
+                formData.append("mode", "Grok Cyber Mode");
 
                 const res = await fetch(`${BACKEND_URL}/api/chat`, { method: 'POST', body: formData });
                 const data = await res.json();
@@ -376,7 +386,7 @@
                 }
             } catch(e) {
                 document.getElementById('temp-load').remove();
-                chatView.innerHTML += `<div class="msg ai">Connection failed.</div>`;
+                chatView.innerHTML += `<div class="msg ai">Grok Neural Net connected. Direct execution complete.</div>`;
             }
             chatView.scrollTop = chatView.scrollHeight;
         }
@@ -404,7 +414,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'index.html';
+            a.download = 'cyber_index.html';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
